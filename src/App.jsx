@@ -9,6 +9,15 @@ import { PaymentCancelPage } from './pages/PaymentCancelPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 
+// Dashboard Layout & User Pages
+import { DashboardLayout } from './layouts/DashboardLayout';
+import { DashboardHome } from './pages/dashboard/DashboardHome';
+import { AddLessonPage } from './pages/dashboard/AddLessonPage';
+import { MyLessonsPage } from './pages/dashboard/MyLessonsPage';
+import { EditLessonPage } from './pages/dashboard/EditLessonPage';
+import { MyFavoritesPage } from './pages/dashboard/MyFavoritesPage';
+import { ProfilePage } from './pages/dashboard/ProfilePage';
+
 export default function App() {
   return (
     <Routes>
@@ -20,6 +29,17 @@ export default function App() {
       <Route path="/payment/cancel" element={<PaymentCancelPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+
+      {/* User Dashboard Routes */}
+      <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route index element={<DashboardHome />} />
+        <Route path="add-lesson" element={<AddLessonPage />} />
+        <Route path="my-lessons" element={<MyLessonsPage />} />
+        <Route path="edit-lesson/:id" element={<EditLessonPage />} />
+        <Route path="my-favorites" element={<MyFavoritesPage />} />
+        <Route path="profile" element={<ProfilePage />} />
+      </Route>
+
       <Route path="*" element={<HomePage />} />
     </Routes>
   );
