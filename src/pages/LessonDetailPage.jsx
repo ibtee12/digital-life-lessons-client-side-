@@ -11,6 +11,7 @@ import { LessonCard } from '../components/LessonCard';
 import { ReportModal } from '../components/ReportModal';
 import { ShareModal } from '../components/ShareModal';
 import { HeartBurst } from '../components/HeartBurst';
+import { ReadingProgressBar } from '../components/ReadingProgressBar';
 import { useAuth } from '../context/AuthContext';
 
 export const LessonDetailPage = () => {
@@ -73,6 +74,7 @@ export const LessonDetailPage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAF9] dark:bg-[#0C0A09] text-[#1C1917] dark:text-[#FAFAF9]">
       <Navbar />
+      <ReadingProgressBar />
 
       <main className="flex-1 max-w-[800px] w-full mx-auto px-4 sm:px-6 pt-24 pb-20 print:p-0 print:max-w-none">
         
