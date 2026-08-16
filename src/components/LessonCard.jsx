@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, Heart, Bookmark, Calendar, ArrowRight, Star } from 'lucide-react';
 import { CategoryBadge, EmotionalToneBadge, AccessBadge } from './Badge';
+import { HeartBurst } from './HeartBurst';
 import { useAuth } from '../context/AuthContext';
 
 export const LessonCard = ({ lesson }) => {
@@ -133,18 +134,21 @@ export const LessonCard = ({ lesson }) => {
 
           {/* Quick Actions (Like & Bookmark) */}
           <div className="flex items-center space-x-1.5 flex-shrink-0">
-            <button
-              onClick={() => toggleLike(lesson.id)}
-              className={`p-1.5 rounded-lg text-xs flex items-center space-x-1 transition ${
-                isLiked
-                  ? 'text-red-500 bg-red-50 dark:bg-red-950/40'
-                  : 'text-stone-400 hover:text-red-500 hover:bg-stone-100 dark:hover:bg-stone-800'
-              }`}
-              title="Like lesson"
-            >
-              <Heart className={`w-4 h-4 ${isLiked ? 'fill-red-500' : ''}`} />
-              <span className="font-medium text-[11px]">{lesson.likesCount || 0}</span>
-            </button>
+            <div className="relative">
+              <HeartBurst triggerKey={isLiked ? lesson.id : null} />
+              <button
+                onClick={() => toggleLike(lesson.id)}
+                className={`p-1.5 rounded-lg text-xs flex items-center space-x-1 transition ${
+                  isLiked
+                    ? 'text-red-500 bg-red-50 dark:bg-red-950/40'
+                    : 'text-stone-400 hover:text-red-500 hover:bg-stone-100 dark:hover:bg-stone-800'
+                }`}
+                title="Like lesson"
+              >
+                <Heart className={`w-4 h-4 ${isLiked ? 'fill-red-500' : ''}`} />
+                <span className="font-medium text-[11px]">{lesson.likesCount || 0}</span>
+              </button>
+            </div>
 
             <button
               onClick={() => toggleFavorite(lesson.id)}

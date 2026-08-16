@@ -10,6 +10,7 @@ import { CategoryBadge, EmotionalToneBadge, AccessBadge } from '../components/Ba
 import { LessonCard } from '../components/LessonCard';
 import { ReportModal } from '../components/ReportModal';
 import { ShareModal } from '../components/ShareModal';
+import { HeartBurst } from '../components/HeartBurst';
 import { useAuth } from '../context/AuthContext';
 
 export const LessonDetailPage = () => {
@@ -237,19 +238,22 @@ export const LessonDetailPage = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
-            {/* Heart Bounce Button */}
-            <motion.button
-              whileTap={{ scale: 1.3 }}
-              onClick={() => toggleLike(lesson.id)}
-              className={`px-3.5 py-2 rounded-xl font-semibold text-xs flex items-center space-x-1.5 transition ${
-                isLiked
-                  ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200'
-                  : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-red-50 hover:text-red-600'
-              }`}
-            >
-              <Heart className={`w-4 h-4 ${isLiked ? 'fill-red-600 text-red-600' : ''}`} />
-              <span>{isLiked ? 'Liked' : 'Like'}</span>
-            </motion.button>
+            {/* Heart Bounce Button with Particle Burst */}
+            <div className="relative">
+              <HeartBurst triggerKey={isLiked ? lesson.id : null} />
+              <motion.button
+                whileTap={{ scale: 1.3 }}
+                onClick={() => toggleLike(lesson.id)}
+                className={`px-3.5 py-2 rounded-xl font-semibold text-xs flex items-center space-x-1.5 transition ${
+                  isLiked
+                    ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 shadow-sm'
+                    : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-red-50 hover:text-red-600'
+                }`}
+              >
+                <Heart className={`w-4 h-4 ${isLiked ? 'fill-red-600 text-red-600' : ''}`} />
+                <span>{isLiked ? 'Liked' : 'Like'}</span>
+              </motion.button>
+            </div>
 
             {/* Favorite Save Button */}
             <button
