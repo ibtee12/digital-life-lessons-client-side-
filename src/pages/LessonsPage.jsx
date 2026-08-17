@@ -5,11 +5,13 @@ import { Footer } from '../components/Footer';
 import { LessonCard } from '../components/LessonCard';
 import { Pagination } from '../components/Pagination';
 import { useAuth } from '../context/AuthContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 const CATEGORIES = ['All', 'Personal Growth', 'Career', 'Relationships', 'Mindset', 'Mistakes Learned'];
 const TONES = ['All', 'Motivational', 'Sad', 'Realization', 'Gratitude'];
 
 export const LessonsPage = () => {
+  useDocumentTitle('Explore Public Wisdom');
   const { lessons } = useAuth();
   
   const [searchTerm, setSearchTerm] = useState('');

@@ -13,6 +13,7 @@ import { ShareModal } from '../components/ShareModal';
 import { HeartBurst } from '../components/HeartBurst';
 import { ReadingProgressBar } from '../components/ReadingProgressBar';
 import { useAuth } from '../context/AuthContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const LessonDetailPage = () => {
   const { id } = useParams();
@@ -29,6 +30,8 @@ export const LessonDetailPage = () => {
   const lesson = useMemo(() => {
     return lessons.find((l) => l.id === id) || lessons[0];
   }, [lessons, id]);
+
+  useDocumentTitle(lesson?.title || 'Life Lesson Details');
 
   const isLocked = lesson.accessLevel === 'Premium' && (!user.isLoggedIn || !user.isPremium);
   const isLiked = lesson.likes?.includes(user?.id);

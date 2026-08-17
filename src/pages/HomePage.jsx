@@ -6,8 +6,10 @@ import { TopContributors } from '../components/home/TopContributors';
 import { MostSavedLessons } from '../components/home/MostSavedLessons';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const HomePage = () => {
+  useDocumentTitle('Preserve & Explore Defining Insights');
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAF9] dark:bg-[#0C0A09] text-[#1C1917] dark:text-[#FAFAF9]">
       <Navbar />
