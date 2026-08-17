@@ -6,6 +6,7 @@ import {
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAuth } from '../../context/AuthContext';
 import { AccessBadge, CategoryBadge } from '../../components/Badge';
+import { ActivityHeatmap } from '../../components/dashboard/ActivityHeatmap';
 
 const WEEKLY_DATA = [
   { day: 'Mon', reflections: 2, views: 120 },
@@ -152,6 +153,9 @@ export const DashboardHome = () => {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* Activity Heatmap & Consistency Streak */}
+      <ActivityHeatmap />
 
       {/* Recently Added Lessons & Shortcuts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
