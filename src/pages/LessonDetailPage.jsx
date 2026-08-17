@@ -215,7 +215,7 @@ export const LessonDetailPage = () => {
           </div>
 
           <Link
-            to="/dashboard/profile"
+            to={`/author/${lesson.creatorId || 'user-101'}`}
             className="px-4 py-2 rounded-xl border border-[#059669] text-[#059669] dark:text-[#34D399] hover:bg-[#ECFDF5] dark:hover:bg-[#059669]/10 font-semibold text-xs transition"
           >
             View Author Profile

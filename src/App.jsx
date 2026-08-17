@@ -8,6 +8,7 @@ import { PaymentSuccessPage } from './pages/PaymentSuccessPage';
 import { PaymentCancelPage } from './pages/PaymentCancelPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { CreatorPublicProfile } from './pages/CreatorPublicProfile';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Dashboard Layout & User Pages
@@ -37,6 +38,7 @@ export default function App() {
       <Route path="/payment/cancel" element={<PaymentCancelPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/author/:id" element={<CreatorPublicProfile />} />
 
       {/* Protected Dashboard Routes */}
       <Route path="/dashboard" element={<DashboardLayout />}>
