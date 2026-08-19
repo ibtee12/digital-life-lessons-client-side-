@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Sun, Moon, Menu, X, Star, User, LayoutDashboard, LogOut, PlusCircle, BookOpen, Crown, ChevronDown
+  Sun, Moon, Menu, X, Star, User, LayoutDashboard, LogOut, PlusCircle, BookOpen, Crown, ChevronDown, Bell
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { NotificationDrawer } from './NotificationDrawer';
 
 export const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
@@ -14,6 +15,7 @@ export const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [evaluatorOpen, setEvaluatorOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -166,6 +168,16 @@ export const Navbar = () => {
               </div>
             )}
           </div>
+
+          {/* Notification Center Bell */}
+          <button
+            onClick={() => setNotificationsOpen(true)}
+            className="p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition relative"
+            aria-label="Open notifications"
+          >
+            <Bell className="w-5 h-5 text-stone-600 dark:text-stone-300" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#059669] ring-2 ring-white dark:ring-[#0C0A09]" />
+          </button>
 
           {/* Theme Toggle Button */}
           <button
@@ -332,6 +344,12 @@ export const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Global Notification Drawer */}
+      <NotificationDrawer
+        isOpen={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+      />
     </header>
   );
 };
