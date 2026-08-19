@@ -6,6 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { Toast } from './components/Toast';
 import { CommandPalette } from './components/CommandPalette';
+import { ScrollToTop } from './components/ScrollToTop';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <App />
           <Toast />
           <CommandPalette />
+          <ScrollToTop />
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
