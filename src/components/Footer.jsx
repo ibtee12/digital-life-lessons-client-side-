@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Mail, Phone, MapPin, Globe } from 'lucide-react';
+import { Heart, Mail, Phone, MapPin, Globe, HelpCircle } from 'lucide-react';
+import { HelpSupportModal } from './HelpSupportModal';
 
 export const Footer = () => {
+  const [helpOpen, setHelpOpen] = useState(false);
+
   return (
     <footer className="bg-[#1C1917] text-[#A8A29E] pt-16 pb-8 border-t border-[#44403C]">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,6 +78,15 @@ export const Footer = () => {
               <li><Link to="/pricing" className="hover:text-[#FAFAF9] transition-colors">Pricing & Membership</Link></li>
               <li><Link to="/dashboard" className="hover:text-[#FAFAF9] transition-colors">User Dashboard</Link></li>
               <li><Link to="/dashboard/add-lesson" className="hover:text-[#FAFAF9] transition-colors">Create Life Lesson</Link></li>
+              <li>
+                <button
+                  onClick={() => setHelpOpen(true)}
+                  className="text-left text-[#059669] hover:underline font-semibold flex items-center space-x-1"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                  <span>Help & Feedback</span>
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -131,6 +143,12 @@ export const Footer = () => {
         </div>
 
       </div>
+
+      {/* Help & Support Modal */}
+      <HelpSupportModal
+        isOpen={helpOpen}
+        onClose={() => setHelpOpen(false)}
+      />
     </footer>
   );
 };
