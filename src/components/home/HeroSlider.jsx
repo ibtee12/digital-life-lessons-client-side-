@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, BookOpen, Compass, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Sparkles, ChevronLeft, ChevronRight, BookOpen, ShieldCheck, Star } from 'lucide-react';
 
 const SLIDES = [
   {
@@ -9,144 +9,174 @@ const SLIDES = [
     title: 'Preserve Your Life Wisdom Before Time Fades It',
     subtitle: 'A dedicated editorial space to capture, organize, and reflect on the defining insights of your personal journey.',
     image: 'https://images.unsplash.com/photo-1499209974431-9dac3ada00d7?auto=format&fit=crop&w=1600&q=80',
+    fallbackGradient: 'from-emerald-950 via-[#1C1917] to-stone-950',
+    accentColor: '#059669',
     ctaText: 'Explore Public Wisdom',
     ctaLink: '/lessons',
-    badge: 'Wisdom Archive'
+    badge: 'Wisdom Archive',
+    highlightStat: '1,400+ Insights'
   },
   {
     id: 2,
     title: 'Accelerate Growth Through Shared Real-World Insights',
     subtitle: 'Learn from curated, high-value career frameworks, personal breakthroughs, and honest mistakes shared by top thinkers.',
     image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80',
+    fallbackGradient: 'from-teal-950 via-[#1C1917] to-stone-950',
+    accentColor: '#0D9488',
     ctaText: 'Join the Community',
     ctaLink: '/register',
-    badge: 'Curated Reflection'
+    badge: 'Curated Reflection',
+    highlightStat: '850+ Thinkers'
   },
   {
     id: 3,
     title: 'Unlock Premium Life Lessons & Deep Frameworks',
     subtitle: 'Gain lifetime access to exclusive premium wisdom entries, actionable mental models, and structured reflections.',
     image: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=1600&q=80',
+    fallbackGradient: 'from-amber-950 via-[#1C1917] to-stone-950',
+    accentColor: '#F59E0B',
     ctaText: 'Upgrade to Premium',
     ctaLink: '/pricing',
-    badge: 'Lifetime Access'
+    badge: 'Lifetime Access',
+    highlightStat: '৳1500 Lifetime'
   }
 ];
 
 export const HeroSlider = () => {
   const [current, setCurrent] = useState(0);
+  const [imgError, setImgError] = useState({});
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % SLIDES.length);
-    }, 5000);
+    }, 6000);
     return () => clearInterval(timer);
   }, []);
 
   const nextSlide = () => setCurrent((prev) => (prev + 1) % SLIDES.length);
   const prevSlide = () => setCurrent((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
 
+  const activeSlide = SLIDES[current];
+
   return (
-    <div className="relative w-full h-[400px] md:h-[500px] rounded-3xl overflow-hidden shadow-2xl group">
+    <div className="relative w-full h-[460px] sm:h-[500px] md:h-[520px] rounded-3xl overflow-hidden shadow-2xl bg-[#1C1917] border border-stone-800/80 group select-none">
       
       {/* Slides */}
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.98 }}
-          transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6, ease: 'easeInOut' }}
           className="absolute inset-0 w-full h-full"
         >
-          {/* Background Image */}
-          <img
-            src={SLIDES[current].image}
-            alt={SLIDES[current].title}
-            className="w-full h-full object-cover object-center"
+          {/* Background Image Container with Gradient Fallback */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${activeSlide.fallbackGradient}`}>
+            {!imgError[activeSlide.id] && (
+              <img
+                src={activeSlide.image}
+                alt=""
+                onError={() => setImgError((prev) => ({ ...prev, [activeSlide.id]: true }))}
+                className="w-full h-full object-cover object-center opacity-40 mix-blend-overlay transition-transform duration-1000 scale-105"
+              />
+            )}
+          </div>
+
+          {/* Editorial Ambient Mesh & Vignette */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0C0A09] via-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0C0A09]/95 via-[#0C0A09]/80 to-transparent sm:w-4/5" />
+          <div
+            className="absolute -top-24 -left-24 w-96 h-96 rounded-full blur-3xl opacity-25 pointer-events-none"
+            style={{ backgroundColor: activeSlide.accentColor }}
           />
 
-          {/* Left Gradient Overlay (Black 65% to Transparent) */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-transparent" />
-
-          {/* Slide Text Content */}
+          {/* Slide Content Layout */}
           <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-12 md:px-16 max-w-2xl text-white z-10">
             
-            {/* Badge */}
+            {/* Top Badge & Highlight */}
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.4 }}
-              className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#059669] text-white w-fit mb-4 shadow-md"
+              transition={{ delay: 0.15, duration: 0.4 }}
+              className="flex items-center space-x-2.5 mb-5"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{SLIDES[current].badge}</span>
+              <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#059669] text-white shadow-lg shadow-[#059669]/25 backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{activeSlide.badge}</span>
+              </span>
+
+              <span className="hidden sm:inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/10 text-stone-300 border border-white/10 backdrop-blur-md">
+                <span>{activeSlide.highlightStat}</span>
+              </span>
             </motion.div>
 
-            {/* Heading */}
+            {/* Main Heading */}
             <motion.h1
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.4 }}
-              className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight mb-4 text-white"
+              transition={{ delay: 0.25, duration: 0.4 }}
+              className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.15] mb-4 text-white drop-shadow-sm"
             >
-              {SLIDES[current].title}
+              {activeSlide.title}
             </motion.h1>
 
             {/* Subtitle */}
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.4 }}
-              className="text-sm sm:text-base md:text-lg text-stone-200 line-clamp-2 mb-6 font-normal leading-relaxed"
+              transition={{ delay: 0.35, duration: 0.4 }}
+              className="text-sm sm:text-base md:text-lg text-stone-300 max-w-xl mb-8 font-normal leading-relaxed drop-shadow"
             >
-              {SLIDES[current].subtitle}
+              {activeSlide.subtitle}
             </motion.p>
 
             {/* CTA Button */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.4 }}
+              transition={{ delay: 0.45, duration: 0.4 }}
+              className="flex items-center space-x-4"
             >
               <Link
-                to={SLIDES[current].ctaLink}
-                className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-semibold text-sm sm:text-base shadow-lg shadow-[#059669]/30 hover:scale-[1.02] active:scale-[0.98] transition"
+                to={activeSlide.ctaLink}
+                className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-sm sm:text-base shadow-xl shadow-[#059669]/30 hover:scale-[1.02] active:scale-[0.98] transition"
               >
-                <span>{SLIDES[current].ctaText}</span>
+                <span>{activeSlide.ctaText}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </motion.div>
+
           </div>
         </motion.div>
       </AnimatePresence>
 
-      {/* Manual Arrow Nav Controls */}
+      {/* Manual Arrow Controls */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md transition opacity-0 group-hover:opacity-100"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/40 hover:bg-black/80 text-white border border-white/10 backdrop-blur-md transition opacity-70 hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
         aria-label="Previous Slide"
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-md transition opacity-0 group-hover:opacity-100"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/40 hover:bg-black/80 text-white border border-white/10 backdrop-blur-md transition opacity-70 hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
         aria-label="Next Slide"
       >
         <ChevronRight className="w-5 h-5" />
       </button>
 
-      {/* Custom Dots Indicators */}
-      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center space-x-2.5">
+      {/* Custom Dots Indicator */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center space-x-2.5 p-1.5 rounded-full bg-black/40 border border-white/10 backdrop-blur-md">
         {SLIDES.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrent(idx)}
-            className={`h-2.5 rounded-full transition-all duration-300 ${
+            className={`h-2 rounded-full transition-all duration-300 ${
               current === idx
-                ? 'w-8 bg-[#059669] shadow-md shadow-[#059669]/50'
-                : 'w-2.5 bg-white/60 hover:bg-white'
+                ? 'w-7 bg-[#059669] shadow-md shadow-[#059669]/50'
+                : 'w-2 bg-white/40 hover:bg-white/70'
             }`}
             aria-label={`Go to slide ${idx + 1}`}
           />

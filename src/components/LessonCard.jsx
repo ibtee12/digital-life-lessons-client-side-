@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, Heart, Bookmark, Calendar, ArrowRight, Star } from 'lucide-react';
+import { Lock, Heart, Bookmark, Calendar, ArrowRight, Star, BookOpen } from 'lucide-react';
 import { CategoryBadge, EmotionalToneBadge, AccessBadge } from './Badge';
 import { HeartBurst } from './HeartBurst';
 import { useAuth } from '../context/AuthContext';
 
+const FALLBACK_IMAGES = [
+  'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1499209974431-9dac3ada00d7?auto=format&fit=crop&w=800&q=80'
+];
+
 export const LessonCard = ({ lesson }) => {
   const { user, toggleLike, toggleFavorite, favorites } = useAuth();
   const navigate = useNavigate();
+  const [imgSrc, setImgSrc] = useState(lesson.image || FALLBACK_IMAGES[0]);
+  const [imgFailed, setImgFailed] = useState(false);
 
   const isLocked = lesson.accessLevel === 'Premium' && (!user.isLoggedIn || !user.isPremium);
   const isLiked = lesson.likes?.includes(user?.id);
@@ -20,10 +29,10 @@ export const LessonCard = ({ lesson }) => {
     year: 'numeric'
   });
 
-  const handleCardClick = (e) => {
-    if (isLocked) {
-      e.preventDefault();
-      navigate('/pricing');
+  const handleImgError = () => {
+    if (!imgFailed) {
+      setImgFailed(true);
+      setImgSrc(FALLBACK_IMAGES[1]);
     }
   };
 
@@ -44,19 +53,14 @@ export const LessonCard = ({ lesson }) => {
 
       {/* Top Image Section */}
       <div className="relative aspect-video w-full overflow-hidden bg-stone-100 dark:bg-stone-800">
-        {lesson.image ? (
-          <img
-            src={lesson.image}
-            alt={lesson.title}
-            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
-              isLocked ? 'filter blur-[3px] brightness-90' : ''
-            }`}
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#059669]/20 to-[#0D9488]/30 flex items-center justify-center text-stone-400">
-            <span className="font-bold text-2xl tracking-widest uppercase">DLL</span>
-          </div>
-        )}
+        <img
+          src={imgSrc}
+          alt=""
+          onError={handleImgError}
+          className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
+            isLocked ? 'filter blur-[3px] brightness-90' : ''
+          }`}
+        />
 
         {/* Access Level Badge (Overlay) */}
         <div className="absolute bottom-3 left-3 z-10">
@@ -117,8 +121,11 @@ export const LessonCard = ({ lesson }) => {
           {/* Creator Info */}
           <div className="flex items-center space-x-2.5 min-w-0">
             <img
-              src={lesson.creatorPhoto}
-              alt={lesson.creatorName}
+              src={lesson.creatorPhoto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80'}
+              alt=""
+              onError={(e) => {
+                e.target.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80';
+              }}
               className="w-8 h-8 rounded-full object-cover ring-2 ring-stone-200 dark:ring-stone-700 flex-shrink-0"
             />
             <div className="truncate text-xs">
