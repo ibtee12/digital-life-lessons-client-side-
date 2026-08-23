@@ -227,7 +227,7 @@ export const Navbar = () => {
                   </Link>
 
                   <button
-                    onClick={() => { toggleLoginState(); setUserDropdownOpen(false); }}
+                    onClick={() => { logoutUser(); setUserDropdownOpen(false); }}
                     className="w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 font-medium transition mt-1"
                   >
                     <LogOut className="w-4 h-4" />
@@ -318,7 +318,7 @@ export const Navbar = () => {
                     </div>
                   </div>
                   <button
-                    onClick={toggleLoginState}
+                    onClick={() => { logoutUser(); setMobileMenuOpen(false); }}
                     className="w-full py-2.5 rounded-lg border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 font-semibold text-sm"
                   >
                     Logout
