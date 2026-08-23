@@ -280,11 +280,19 @@ export const AuthProvider = ({ children }) => {
   const logoutUser = async () => {
     try {
       await signOut(auth);
-      setUser(prev => ({ ...prev, isLoggedIn: false }));
-      showToast("Logged out successfully", "info");
     } catch (err) {
       console.error("Logout error:", err);
-      showToast("Failed to log out", "error");
+    } finally {
+      setUser({
+        id: null,
+        name: "",
+        email: "",
+        photo: "",
+        role: "user",
+        isPremium: false,
+        isLoggedIn: false
+      });
+      showToast("Logged out successfully", "info");
     }
   };
 

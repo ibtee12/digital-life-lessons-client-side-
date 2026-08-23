@@ -1,44 +1,81 @@
-import React, { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Sun, Moon, Menu, X, Star, User, LayoutDashboard, LogOut, PlusCircle, BookOpen, Crown, ChevronDown, Bell
-} from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
-import { useAuth } from '../context/AuthContext';
-import { NotificationDrawer } from './NotificationDrawer';
+  Sun, Moon, Menu, X, Star, User, LayoutDashboard, LogOut, Crown, ChevronDown, Bell
+} from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
+import { NotificationDrawer } from "./NotificationDrawer";
+
+const UserAvatar = ({ user, className = "w-9 h-9" }) => {
+  const [imgError, setImgError] = useState(false);
+
+  const getInitial = () => {
+    if (user?.name && user.name.trim()) {
+      return user.name.trim().charAt(0).toUpperCase();
+    }
+    if (user?.email && user.email.trim()) {
+      return user.email.trim().charAt(0).toUpperCase();
+    }
+    return "U";
+  };
+
+  if (user?.photo && !imgError) {
+    return (
+      <img
+        src={user.photo}
+        alt={user.name || "User Profile"}
+        referrerPolicy="no-referrer"
+        onError={() => setImgError(true)}
+        className={`${className} rounded-full object-cover border border-stone-200 dark:border-stone-700 shadow-2xs`}
+      />
+    );
+  }
+
+  return (
+    <div className={`${className} rounded-full bg-gradient-to-tr from-[#059669] to-[#0D9488] text-white flex items-center justify-center font-extrabold text-sm border border-white/20 shadow-2xs select-none`}>
+      {getInitial()}
+    </div>
+  );
+};
 
 export const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
-  const { user, toggleDemoRole, toggleLoginState } = useAuth();
+  const { user, toggleDemoRole, logoutUser } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [evaluatorOpen, setEvaluatorOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 15);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close menus on route change
   useEffect(() => {
     setMobileMenuOpen(false);
     setUserDropdownOpen(false);
   }, [location]);
 
+  const handleLogout = async (e) => {
+    if (e) e.preventDefault();
+    setUserDropdownOpen(false);
+    setMobileMenuOpen(false);
+    await logoutUser();
+  };
+
   const navLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'Public Lessons', path: '/lessons' },
+    { label: "Home", path: "/" },
+    { label: "Public Lessons", path: "/lessons" },
     ...(user.isLoggedIn ? [
-      { label: 'Add Lesson', path: '/dashboard/add-lesson' },
-      { label: 'My Lessons', path: '/dashboard/my-lessons' },
+      { label: "Add Lesson", path: "/dashboard/add-lesson" },
+      { label: "My Lessons", path: "/dashboard/my-lessons" },
     ] : []),
   ];
 
@@ -46,8 +83,8 @@ export const Navbar = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-[1000] h-[72px] transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#FAFAF9]/80 dark:bg-[#0C0A09]/80 glass-nav border-b border-[#E7E5E4] dark:border-[#44403C] shadow-sm'
-          : 'bg-[#FAFAF9] dark:bg-[#0C0A09] border-b border-transparent'
+          ? "bg-[#FAFAF9]/80 dark:bg-[#0C0A09]/80 glass-nav border-b border-[#E7E5E4] dark:border-[#44403C] shadow-xs"
+          : "bg-[#FAFAF9] dark:bg-[#0C0A09] border-b border-transparent"
       }`}
     >
       <div className="max-w-[1280px] mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
@@ -76,8 +113,8 @@ export const Navbar = () => {
                 className={({ isActive }) =>
                   `relative py-1 font-medium text-sm transition-colors duration-200 ${
                     isActive
-                      ? 'text-[#059669] dark:text-[#34D399]'
-                      : 'text-[#57534E] dark:text-[#A8A29E] hover:text-[#059669] dark:hover:text-[#34D399]'
+                      ? "text-[#059669] dark:text-[#34D399]"
+                      : "text-[#57534E] dark:text-[#A8A29E] hover:text-[#059669] dark:hover:text-[#34D399]"
                   }`
                 }
               >
@@ -86,7 +123,7 @@ export const Navbar = () => {
                   <motion.div
                     layoutId="nav-dot"
                     className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#059669]"
-                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
                   />
                 )}
               </NavLink>
@@ -100,13 +137,13 @@ export const Navbar = () => {
               className={({ isActive }) =>
                 `relative py-1 font-medium text-sm transition-colors duration-200 ${
                   isActive
-                    ? 'text-[#059669] dark:text-[#34D399]'
-                    : 'text-[#57534E] dark:text-[#A8A29E] hover:text-[#059669] dark:hover:text-[#34D399]'
+                    ? "text-[#059669] dark:text-[#34D399]"
+                    : "text-[#57534E] dark:text-[#A8A29E] hover:text-[#059669] dark:hover:text-[#34D399]"
                 }`
               }
             >
               Pricing
-              {location.pathname === '/pricing' && (
+              {location.pathname === "/pricing" && (
                 <motion.div
                   layoutId="nav-dot"
                   className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#059669]"
@@ -114,65 +151,20 @@ export const Navbar = () => {
               )}
             </NavLink>
           ) : user.isLoggedIn && user.isPremium ? (
-            <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-bold bg-[#FFFBEB] dark:bg-[#F59E0B]/20 text-[#B45309] dark:text-[#FBBF24] border border-[#FCD34D] dark:border-[#F59E0B]/40 shadow-sm">
+            <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-bold bg-[#FFFBEB] dark:bg-[#F59E0B]/20 text-[#B45309] dark:text-[#FBBF24] border border-[#FCD34D] dark:border-[#F59E0B]/40 shadow-2xs">
               <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
               <span>Premium ⭐</span>
             </span>
           ) : null}
         </nav>
 
-        {/* Right Actions & Evaluator Switcher */}
+        {/* Right Actions */}
         <div className="flex items-center space-x-3">
           
-          {/* Interactive Role Switcher Dropdown (For Evaluator Testing) */}
-          <div className="relative hidden xl:block">
-            <button
-              onClick={() => setEvaluatorOpen(!evaluatorOpen)}
-              className="px-2.5 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/30 text-[#047857] dark:text-[#34D399] text-xs font-semibold flex items-center space-x-1 hover:bg-emerald-100/60 transition"
-              title="Switch demo user modes for live grading"
-            >
-              <Crown className="w-3.5 h-3.5" />
-              <span>
-                Demo: {user.isLoggedIn ? (user.role === 'admin' ? 'Admin' : user.isPremium ? 'Premium User' : 'Free User') : 'Logged Out'}
-              </span>
-              <ChevronDown className="w-3 h-3" />
-            </button>
-
-            {evaluatorOpen && (
-              <div className="absolute right-0 mt-2 w-52 rounded-xl bg-white dark:bg-[#292524] border border-stone-200 dark:border-stone-700 shadow-xl p-2 z-50 text-xs space-y-1">
-                <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-stone-400">Switch Evaluator Mode</p>
-                <button
-                  onClick={() => { toggleDemoRole('user', false); setEvaluatorOpen(false); }}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between font-medium ${!user.isPremium && user.role === 'user' ? 'bg-emerald-50 dark:bg-emerald-950/40 text-[#059669]' : 'hover:bg-stone-100 dark:hover:bg-stone-800'}`}
-                >
-                  <span>Free User (Locked Content)</span>
-                </button>
-                <button
-                  onClick={() => { toggleDemoRole('user', true); setEvaluatorOpen(false); }}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between font-medium ${user.isPremium && user.role === 'user' ? 'bg-emerald-50 dark:bg-emerald-950/40 text-[#059669]' : 'hover:bg-stone-100 dark:hover:bg-stone-800'}`}
-                >
-                  <span>Premium User ⭐</span>
-                </button>
-                <button
-                  onClick={() => { toggleDemoRole('admin', true); setEvaluatorOpen(false); }}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between font-medium ${user.role === 'admin' ? 'bg-emerald-50 dark:bg-emerald-950/40 text-[#059669]' : 'hover:bg-stone-100 dark:hover:bg-stone-800'}`}
-                >
-                  <span>Admin User 🛡️</span>
-                </button>
-                <button
-                  onClick={() => { toggleLoginState(); setEvaluatorOpen(false); }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg font-medium text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800"
-                >
-                  <span>{user.isLoggedIn ? 'Simulate Logout' : 'Simulate Login'}</span>
-                </button>
-              </div>
-            )}
-          </div>
-
           {/* Notification Center Bell */}
           <button
             onClick={() => setNotificationsOpen(true)}
-            className="p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition relative"
+            className="p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition relative cursor-pointer"
             aria-label="Open notifications"
           >
             <Bell className="w-5 h-5 text-stone-600 dark:text-stone-300" />
@@ -182,10 +174,10 @@ export const Navbar = () => {
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition"
+            className="p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer"
             aria-label="Toggle Theme"
           >
-            {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-stone-600" />}
+            {theme === "dark" ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-stone-600" />}
           </button>
 
           {/* User Auth Controls */}
@@ -193,21 +185,20 @@ export const Navbar = () => {
             <div className="relative">
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center space-x-2 p-1 rounded-full border border-stone-200 dark:border-stone-700 hover:ring-2 hover:ring-[#059669]/30 transition"
+                className="flex items-center space-x-2 p-0.5 rounded-full border border-stone-200 dark:border-stone-700 hover:ring-2 hover:ring-[#059669]/30 transition cursor-pointer"
               >
-                <img
-                  src={user.photo}
-                  alt={user.name}
-                  className="w-9 h-9 rounded-full object-cover"
-                />
+                <UserAvatar user={user} className="w-9 h-9" />
               </button>
 
               {/* User Dropdown */}
               {userDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-[#292524] border border-stone-200 dark:border-stone-700 shadow-2xl p-2 z-50 text-sm">
-                  <div className="px-3 py-2 border-b border-stone-100 dark:border-stone-800 mb-1">
-                    <p className="font-bold text-stone-900 dark:text-stone-100">{user.name}</p>
-                    <p className="text-xs text-stone-500 dark:text-stone-400 truncate">{user.email}</p>
+                  <div className="px-3 py-2 border-b border-stone-100 dark:border-stone-800 mb-1 flex items-center space-x-2.5">
+                    <UserAvatar user={user} className="w-8 h-8 flex-shrink-0" />
+                    <div className="overflow-hidden">
+                      <p className="font-bold text-stone-900 dark:text-stone-100 truncate">{user.name || "User"}</p>
+                      <p className="text-xs text-stone-500 dark:text-stone-400 truncate">{user.email}</p>
+                    </div>
                   </div>
 
                   <Link
@@ -219,7 +210,7 @@ export const Navbar = () => {
                   </Link>
 
                   <Link
-                    to={user.role === 'admin' ? '/dashboard/admin' : '/dashboard'}
+                    to={user.role === "admin" ? "/dashboard/admin" : "/dashboard"}
                     className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 font-medium transition"
                   >
                     <LayoutDashboard className="w-4 h-4 text-[#0D9488]" />
@@ -227,8 +218,8 @@ export const Navbar = () => {
                   </Link>
 
                   <button
-                    onClick={() => { logoutUser(); setUserDropdownOpen(false); }}
-                    className="w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 font-medium transition mt-1"
+                    onClick={handleLogout}
+                    className="w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 font-medium transition mt-1 cursor-pointer"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Logout</span>
@@ -256,7 +247,7 @@ export const Navbar = () => {
           {/* Mobile Hamburger Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition"
+            className="md:hidden p-2 rounded-xl text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -267,10 +258,10 @@ export const Navbar = () => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, x: '100%' }}
+            initial={{ opacity: 0, x: "100%" }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed inset-y-0 right-0 w-full max-w-xs bg-white dark:bg-[#1C1917] z-[1001] shadow-2xl p-6 flex flex-col justify-between md:hidden"
           >
             <div>
@@ -311,15 +302,15 @@ export const Navbar = () => {
               {user.isLoggedIn ? (
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
-                    <img src={user.photo} alt={user.name} className="w-10 h-10 rounded-full" />
-                    <div>
-                      <p className="font-bold text-sm text-stone-900 dark:text-stone-100">{user.name}</p>
-                      <p className="text-xs text-stone-500">{user.email}</p>
+                    <UserAvatar user={user} className="w-10 h-10 flex-shrink-0" />
+                    <div className="overflow-hidden">
+                      <p className="font-bold text-sm text-stone-900 dark:text-stone-100 truncate">{user.name || "User"}</p>
+                      <p className="text-xs text-stone-500 truncate">{user.email}</p>
                     </div>
                   </div>
                   <button
-                    onClick={() => { logoutUser(); setMobileMenuOpen(false); }}
-                    className="w-full py-2.5 rounded-lg border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 font-semibold text-sm"
+                    onClick={handleLogout}
+                    className="w-full py-2.5 rounded-lg border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 font-semibold text-sm cursor-pointer"
                   >
                     Logout
                   </button>
