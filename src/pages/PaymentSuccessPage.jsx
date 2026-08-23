@@ -1,11 +1,20 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { CheckCircle2, ArrowRight, Star, ShieldCheck } from 'lucide-react';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
+import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { CheckCircle2, ArrowRight, Star } from "lucide-react";
+import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
+import { useAuth } from "../context/AuthContext";
 
 export const PaymentSuccessPage = () => {
+  const { user, upgradeToPremium } = useAuth();
+
+  useEffect(() => {
+    if (user && !user.isPremium) {
+      upgradeToPremium();
+    }
+  }, [user]);
+
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAF9] dark:bg-[#0C0A09] text-[#1C1917] dark:text-[#FAFAF9]">
       <Navbar />
@@ -31,7 +40,7 @@ export const PaymentSuccessPage = () => {
             Payment Successful!
           </h1>
           <p className="text-sm text-stone-600 dark:text-stone-400 mb-8 leading-relaxed">
-            Thank you for upgrading to Digital Life Lessons Premium. Your account now has unrestricted lifetime access to all paid wisdom entries and author tools.
+            Thank you for upgrading to Digital Life Lessons Premium. Your account now has unrestricted lifetime access to all paid wisdom entries, author tools, and your verified Premium ⭐ badge!
           </p>
 
           <div className="space-y-3">

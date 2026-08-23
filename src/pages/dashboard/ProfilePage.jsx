@@ -32,6 +32,8 @@ export const ProfilePage = () => {
             <img
               src={photo || user.photo}
               alt={name}
+              referrerPolicy="no-referrer"
+              onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80"; }}
               className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover ring-4 ring-[#059669]/30 shadow-lg"
             />
             {user.isPremium && (

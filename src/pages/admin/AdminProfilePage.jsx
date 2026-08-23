@@ -31,7 +31,7 @@ export const AdminProfilePage = () => {
       <div className="bg-white dark:bg-[#292524] rounded-3xl p-6 sm:p-8 border border-stone-200 dark:border-stone-700/80 shadow-sm space-y-6">
         
         <div className="flex items-center space-x-4 pb-6 border-b border-stone-100 dark:border-stone-800">
-          <img src={photo || user.photo} alt={name} className="w-20 h-20 rounded-full object-cover ring-4 ring-teal-500/30" />
+          <img src={photo || user.photo} alt={name} referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80"; }} className="w-20 h-20 rounded-full object-cover ring-4 ring-teal-500/30" />
           <div>
             <h3 className="text-xl font-bold text-stone-900 dark:text-stone-100">{user.name}</h3>
             <p className="text-xs text-stone-500">{user.email}</p>

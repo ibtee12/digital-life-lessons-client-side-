@@ -1,35 +1,66 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Check, X, Star, ShieldCheck, Sparkles, Zap, ArrowRight, Lock } from 'lucide-react';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
-import { useAuth } from '../context/AuthContext';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Check, X, Star, ShieldCheck, Sparkles, Zap, ArrowRight, Lock, Loader2 } from "lucide-react";
+import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
+import { useAuth } from "../context/AuthContext";
 
 const COMPARISON_ROWS = [
-  { feature: 'Create Public Life Lessons', free: 'Unlimited', premium: 'Unlimited' },
-  { feature: 'Create Premium (Paid) Lessons', free: false, premium: true },
-  { feature: 'Access Premium Wisdom Entries', free: false, premium: true },
-  { feature: 'Verified "Premium ⭐" Badge', free: false, premium: true },
-  { feature: 'Priority Listing in Public Lessons', free: false, premium: true },
-  { feature: 'Ad-free Editorial Experience', free: 'Standard', premium: 'Ad-free ✅' },
-  { feature: 'PDF Article Export', free: 'Standard', premium: 'Unlimited ✅' },
-  { feature: 'Priority 24/7 Support & Moderation', free: 'Standard', premium: 'Priority ✅' },
+  { feature: "Create Public Life Lessons", free: "Unlimited", premium: "Unlimited" },
+  { feature: "Create Premium (Paid) Lessons", free: false, premium: true },
+  { feature: "Access Premium Wisdom Entries", free: false, premium: true },
+  { feature: "Verified \"Premium ⭐\" Badge", free: false, premium: true },
+  { feature: "Priority Listing in Public Lessons", free: false, premium: true },
+  { feature: "Ad-free Editorial Experience", free: "Standard", premium: "Ad-free ✅" },
+  { feature: "PDF Article Export", free: "Standard", premium: "Unlimited ✅" },
+  { feature: "Priority 24/7 Support & Moderation", free: "Standard", premium: "Priority ✅" },
 ];
 
 export const PricingPage = () => {
-  const { user, upgradeToPremium } = useAuth();
+  const { user, showToast } = useAuth();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleUpgrade = () => {
+  const handleUpgrade = async () => {
     setIsProcessing(true);
-    // Simulate Stripe Checkout Redirect
-    setTimeout(() => {
-      upgradeToPremium();
+    try {
+      const secretKey = import.meta.env.VITE_STRIPE_SECRET_KEY;
+      const origin = window.location.origin;
+
+      const params = new URLSearchParams();
+      params.append("payment_method_types[]", "card");
+      params.append("line_items[0][price_data][currency]", "usd");
+      params.append("line_items[0][price_data][product_data][name]", "Digital Life Lessons - Premium Lifetime Pass");
+      params.append("line_items[0][price_data][product_data][description]", "Unlimited access to all paid wisdom entries, priority status, and author tools.");
+      params.append("line_items[0][price_data][unit_amount]", "1500"); // $15.00
+      params.append("line_items[0][quantity]", "1");
+      params.append("mode", "payment");
+      params.append("success_url", `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`);
+      params.append("cancel_url", `${origin}/payment/cancel`);
+
+      const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${secretKey}`,
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: params
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        // Redirect straight to Stripe real hosted payment page
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error?.message || "Failed to create Stripe Checkout session");
+      }
+    } catch (err) {
+      console.error("Stripe Checkout Error:", err);
+      showToast(err.message || "Failed to redirect to Stripe Checkout.", "error");
       setIsProcessing(false);
-      navigate('/payment/success');
-    }, 1500);
+    }
   };
 
   return (
@@ -40,7 +71,7 @@ export const PricingPage = () => {
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-bold bg-[#FFFBEB] dark:bg-[#F59E0B]/20 text-[#B45309] dark:text-[#FBBF24] border border-[#FCD34D] dark:border-[#F59E0B]/40 mb-4 shadow-sm">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-bold bg-[#FFFBEB] dark:bg-[#F59E0B]/20 text-[#B45309] dark:text-[#FBBF24] border border-[#FCD34D] dark:border-[#F59E0B]/40 mb-4 shadow-2xs">
             <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
             <span>Lifetime Pass — One Time Payment</span>
           </div>
@@ -48,32 +79,30 @@ export const PricingPage = () => {
             Invest in Lifelong Wisdom
           </h1>
           <p className="text-base sm:text-lg text-stone-600 dark:text-stone-400 mt-4 leading-relaxed">
-            Unlock unrestricted access to exclusive wisdom entries, create paid lessons, and wear the verified Premium badge.
+            Gain full access to curated mental models, premium reflections, and verified author privileges.
           </p>
         </div>
 
-        {/* Pricing Cards Grid (Free Left vs Premium Right) */}
+        {/* 2 Main Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-20">
           
-          {/* Free Card */}
-          <div className="p-8 rounded-3xl bg-white dark:bg-[#292524] border border-stone-200 dark:border-stone-700/80 shadow-sm flex flex-col justify-between relative">
+          {/* Free Tier Card */}
+          <div className="p-8 rounded-3xl bg-white dark:bg-[#292524] border border-stone-200 dark:border-stone-700/80 shadow-sm flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-extrabold text-stone-900 dark:text-stone-100">
-                  Free Member
+                  Standard Member
                 </h3>
-                {!user.isPremium && (
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300">
-                    Current Plan
-                  </span>
-                )}
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300">
+                  Free Forever
+                </span>
               </div>
               <p className="text-sm text-stone-500 dark:text-stone-400 mb-6">
                 Perfect for readers looking to explore public wisdom entries.
               </p>
 
               <div className="flex items-baseline mb-8">
-                <span className="text-4xl font-extrabold text-stone-900 dark:text-stone-100">৳0</span>
+                <span className="text-4xl font-extrabold text-stone-900 dark:text-stone-100">$0</span>
                 <span className="text-xs font-semibold text-stone-400 ml-2">/ Forever Free</span>
               </div>
 
@@ -113,7 +142,7 @@ export const PricingPage = () => {
           {/* Premium Card */}
           <motion.div
             whileHover={{ y: -4 }}
-            className="p-8 rounded-3xl bg-white dark:bg-[#292524] border-2 border-amber-400 shadow-2xl premium-glow-shadow flex flex-col justify-between relative overflow-hidden"
+            className="p-8 rounded-3xl bg-white dark:bg-[#292524] border-2 border-amber-400 shadow-2xl flex flex-col justify-between relative overflow-hidden"
           >
             {/* Recommended Ribbon */}
             <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-500 to-amber-600 text-white font-extrabold text-[11px] uppercase tracking-wider px-4 py-1.5 rounded-bl-xl shadow-md">
@@ -132,7 +161,7 @@ export const PricingPage = () => {
               </p>
 
               <div className="flex items-baseline mb-8">
-                <span className="text-4xl font-extrabold text-stone-900 dark:text-stone-100">৳1500</span>
+                <span className="text-4xl font-extrabold text-stone-900 dark:text-stone-100">$15</span>
                 <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 ml-2">/ One-Time Lifetime</span>
               </div>
 
@@ -169,13 +198,16 @@ export const PricingPage = () => {
               <button
                 onClick={handleUpgrade}
                 disabled={isProcessing}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white font-extrabold text-sm shadow-xl shadow-amber-500/30 transition flex items-center justify-center space-x-2"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white font-extrabold text-sm shadow-xl shadow-amber-500/30 transition flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
               >
                 {isProcessing ? (
-                  <span>Connecting to Stripe...</span>
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Connecting to Stripe...</span>
+                  </>
                 ) : (
                   <>
-                    <span>Upgrade to Premium — ৳1500 Lifetime</span>
+                    <span>Upgrade to Premium — $15 Lifetime</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -207,14 +239,14 @@ export const PricingPage = () => {
                     {row.feature}
                   </div>
                   <div className="col-span-3 text-center text-stone-500 dark:text-stone-400">
-                    {typeof row.free === 'boolean' ? (
+                    {typeof row.free === "boolean" ? (
                       row.free ? <Check className="w-5 h-5 text-emerald-500 mx-auto" /> : <X className="w-5 h-5 text-stone-300 dark:text-stone-600 mx-auto" />
                     ) : (
                       row.free
                     )}
                   </div>
                   <div className="col-span-3 text-center font-bold text-stone-900 dark:text-stone-100">
-                    {typeof row.premium === 'boolean' ? (
+                    {typeof row.premium === "boolean" ? (
                       row.premium ? <Check className="w-5 h-5 text-emerald-500 mx-auto" /> : <X className="w-5 h-5 text-stone-300 mx-auto" />
                     ) : (
                       row.premium
