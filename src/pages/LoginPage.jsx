@@ -182,7 +182,7 @@ export const LoginPage = () => {
             </form>
 
             <p className="text-xs text-center text-stone-500 dark:text-stone-400 mt-6">
-              Don buy an account yet?{" "}
+              Don\"t have an account yet?{" "}
               <Link to="/register" className="text-[#059669] dark:text-[#34D399] font-bold hover:underline">
                 Create Account
               </Link>

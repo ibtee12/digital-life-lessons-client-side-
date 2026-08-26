@@ -1,7 +1,7 @@
-import React from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import React from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { CheckCircle2, AlertCircle, Info, X } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export const Toast = () => {
   const { toastMessage } = useAuth();
@@ -10,28 +10,48 @@ export const Toast = () => {
 
   const { message, type } = toastMessage;
 
-  const borderClass =
-    type === 'error'
-      ? 'border-l-4 border-red-500 bg-white dark:bg-dark-bgCard text-red-700 dark:text-red-400'
-      : type === 'info'
-      ? 'border-l-4 border-teal-500 bg-white dark:bg-dark-bgCard text-teal-800 dark:text-teal-300'
-      : 'border-l-4 border-[#059669] bg-white dark:bg-dark-bgCard text-emerald-800 dark:text-emerald-300';
+  const typeStyles = {
+    error: {
+      bg: "bg-white dark:bg-[#1C1917]",
+      border: "border-red-500/30 dark:border-red-500/40",
+      text: "text-red-800 dark:text-red-300",
+      iconColor: "text-red-500",
+      pill: "bg-red-50 dark:bg-red-950/40"
+    },
+    info: {
+      bg: "bg-white dark:bg-[#1C1917]",
+      border: "border-teal-500/30 dark:border-teal-500/40",
+      text: "text-teal-800 dark:text-teal-300",
+      iconColor: "text-teal-500",
+      pill: "bg-teal-50 dark:bg-teal-950/40"
+    },
+    success: {
+      bg: "bg-white dark:bg-[#1C1917]",
+      border: "border-emerald-500/30 dark:border-emerald-500/40",
+      text: "text-emerald-900 dark:text-emerald-200",
+      iconColor: "text-[#059669] dark:text-[#34D399]",
+      pill: "bg-emerald-50 dark:bg-emerald-950/40"
+    }
+  };
 
-  const Icon =
-    type === 'error' ? AlertCircle : type === 'info' ? Info : CheckCircle2;
+  const currentStyle = typeStyles[type] || typeStyles.success;
+  const Icon = type === "error" ? AlertCircle : type === "info" ? Info : CheckCircle2;
 
   return (
-    <div className="fixed top-5 right-5 z-[9999] pointer-events-none max-w-sm w-full">
-      <AnimatePresence>
+    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none w-full max-w-md px-4 flex justify-center">
+      <AnimatePresence mode="wait">
         <motion.div
-          initial={{ opacity: 0, x: 50, scale: 0.95 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          exit={{ opacity: 0, x: 20, scale: 0.95 }}
-          transition={{ duration: 0.25, ease: 'easeOut' }}
-          className={`pointer-events-auto p-4 rounded-xl shadow-xl border border-stone-200 dark:border-stone-800 flex items-start space-x-3 ${borderClass}`}
+          key={toastMessage.id || message}
+          initial={{ opacity: 0, y: -24, scale: 0.94 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -16, scale: 0.94 }}
+          transition={{ type: "spring", stiffness: 450, damping: 28 }}
+          className={`pointer-events-auto px-4 py-3 rounded-2xl shadow-2xl backdrop-blur-xl border ${currentStyle.border} ${currentStyle.bg} ${currentStyle.text} flex items-center space-x-3 max-w-sm sm:max-w-md w-auto`}
         >
-          <Icon className="w-5 h-5 flex-shrink-0 mt-0.5" />
-          <div className="flex-1 text-sm font-medium leading-snug">
+          <div className={`p-1.5 rounded-xl ${currentStyle.pill} ${currentStyle.iconColor} flex-shrink-0`}>
+            <Icon className="w-4 h-4" />
+          </div>
+          <div className="text-xs sm:text-sm font-semibold tracking-tight leading-snug pr-1">
             {message}
           </div>
         </motion.div>

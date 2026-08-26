@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, User, Image, Sparkles, ArrowRight, Check, X, Loader2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User, Image, Sparkles, ArrowRight, Check, X, Loader2, Upload, Link as LinkIcon, Trash2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
@@ -16,6 +16,10 @@ export const RegisterPage = () => {
     password: ""
   });
 
+  const [photoMode, setPhotoMode] = useState("file"); // "file" or "url"
+  const [photoPreview, setPhotoPreview] = useState("");
+  const fileInputRef = useRef(null);
+
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
@@ -24,7 +28,46 @@ export const RegisterPage = () => {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === "photo") {
+      setPhotoPreview(value);
+    }
+  };
+
+  // Handle local image file upload from user device
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      showToast("Please select a valid image file (JPG, PNG, WEBP).", "error");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("Image file size should be less than 5MB.", "error");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64Url = event.target?.result;
+      if (typeof base64Url === "string") {
+        setPhotoPreview(base64Url);
+        setFormData(prev => ({ ...prev, photo: base64Url }));
+        showToast("Profile image loaded from device!", "info");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const clearPhoto = () => {
+    setPhotoPreview("");
+    setFormData(prev => ({ ...prev, photo: "" }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   // Password validation rules
@@ -51,13 +94,13 @@ export const RegisterPage = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleAuth = async () => {
     setIsGoogleSubmitting(true);
     try {
       await loginWithGoogle();
       navigate("/dashboard");
     } catch (err) {
-      // Error handled in AuthContext
+      console.error("Google Auth error:", err);
     } finally {
       setIsGoogleSubmitting(false);
     }
@@ -68,13 +111,15 @@ export const RegisterPage = () => {
       <Navbar />
 
       <main className="flex-1 max-w-[1280px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 flex items-center justify-center">
+        
+        {/* 2-Column Matching Layout identical to LoginPage */}
         <div className="w-full max-w-5xl bg-white dark:bg-[#292524] rounded-3xl border border-stone-200 dark:border-stone-700/80 shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
           
-          {/* Left Column: Photography & Insight */}
+          {/* Left Column: Photography & Brand Statement */}
           <div className="relative hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-[#059669] to-[#0D9488] text-white">
             <img
-              src="https://images.unsplash.com/photo-1499209974431-9dac3ada00d7?auto=format&fit=crop&w=800&q=80"
-              alt="Join Community"
+              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80"
+              alt="Join Digital Life Lessons"
               className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay"
             />
             <div className="relative z-10">
@@ -82,10 +127,10 @@ export const RegisterPage = () => {
                 <Sparkles className="w-5 h-5" />
               </div>
               <h2 className="text-3xl font-extrabold tracking-tight leading-snug">
-                Join a community of deliberate thinkers.
+                Join a community dedicated to lifelong wisdom.
               </h2>
               <p className="text-sm text-stone-100 mt-3 leading-relaxed">
-                Capture your personal milestones, reflect on career breakthroughs, and learn from shared life wisdom.
+                Document your core life lessons, save valuable mental models, and inspire others on their journey.
               </p>
             </div>
 
@@ -95,21 +140,22 @@ export const RegisterPage = () => {
             </div>
           </div>
 
-          {/* Right Column: Register Form Card */}
+          {/* Right Column: Register Form */}
           <div className="p-8 sm:p-12 flex flex-col justify-center">
+            
             <div className="mb-6">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100 tracking-tight">
                 Create Account
               </h1>
               <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
-                Start preserving your personal life lessons today.
+                Sign up to get started in seconds.
               </p>
             </div>
 
-            {/* Google Sign-In Button */}
+            {/* Google Quick Auth */}
             <button
               type="button"
-              onClick={handleGoogleLogin}
+              onClick={handleGoogleAuth}
               disabled={isGoogleSubmitting || isSubmitting}
               className="w-full py-3 px-4 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-[#1C1917] hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 font-semibold text-sm shadow-sm flex items-center justify-center space-x-3 transition mb-6 cursor-pointer disabled:opacity-50"
             >
@@ -134,6 +180,7 @@ export const RegisterPage = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              
               {/* Name */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1">
@@ -172,22 +219,122 @@ export const RegisterPage = () => {
                 </div>
               </div>
 
-              {/* Photo URL */}
+              {/* Dual-Mode Profile Photo Selector (Upload File OR Web URL) */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1">
-                  Photo URL (Optional)
-                </label>
-                <div className="relative flex items-center">
-                  <Image className="w-4 h-4 absolute left-3.5 text-stone-400 pointer-events-none" />
-                  <input
-                    type="url"
-                    name="photo"
-                    value={formData.photo}
-                    onChange={handleChange}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full h-11 pl-10 pr-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-[#1C1917] text-stone-900 dark:text-stone-100 text-sm focus:outline-none focus:border-[#059669] focus:ring-2 focus:ring-[#D1FAE5] dark:focus:ring-[#059669]/30 transition"
-                  />
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400">
+                    Profile Photo (Optional)
+                  </label>
+
+                  {/* Mode Switcher Tabs */}
+                  <div className="flex items-center space-x-1 bg-stone-100 dark:bg-stone-800 p-0.5 rounded-lg text-[11px] font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setPhotoMode("file")}
+                      className={`px-2 py-0.5 rounded-md transition ${photoMode === "file" ? "bg-white dark:bg-[#292524] text-[#059669] dark:text-[#34D399] shadow-2xs" : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-200"}`}
+                    >
+                      📁 Upload File
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPhotoMode("url")}
+                      className={`px-2 py-0.5 rounded-md transition ${photoMode === "url" ? "bg-white dark:bg-[#292524] text-[#059669] dark:text-[#34D399] shadow-2xs" : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-200"}`}
+                    >
+                      🌐 Image URL
+                    </button>
+                  </div>
                 </div>
+
+                {/* Option A: Upload File from Device */}
+                {photoMode === "file" && (
+                  <div className="space-y-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      id="avatar-file-upload"
+                    />
+
+                    {photoPreview ? (
+                      <div className="flex items-center space-x-3 p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20">
+                        <img
+                          src={photoPreview}
+                          alt="Preview"
+                          className="w-10 h-10 rounded-full object-cover border border-emerald-500/40 shadow-xs flex-shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300 truncate">
+                            Image selected from device
+                          </p>
+                          <p className="text-[10px] text-stone-500">Ready to save</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={clearPhoto}
+                          className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-white dark:hover:bg-stone-800 transition"
+                          title="Remove image"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label
+                        htmlFor="avatar-file-upload"
+                        className="flex items-center justify-between p-3 border-2 border-dashed border-stone-200 dark:border-stone-700 hover:border-[#059669] dark:hover:border-[#34D399] bg-stone-50/60 dark:bg-[#1C1917]/60 rounded-xl cursor-pointer transition group"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className="p-2 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 group-hover:border-[#059669]/40">
+                            <Upload className="w-4 h-4 text-stone-500 group-hover:text-[#059669]" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-stone-700 dark:text-stone-300 group-hover:text-[#059669]">
+                              Click to choose image from device
+                            </p>
+                            <p className="text-[10px] text-stone-400">PNG, JPG, WEBP (Max 5MB)</p>
+                          </div>
+                        </div>
+                      </label>
+                    )}
+                  </div>
+                )}
+
+                {/* Option B: Enter Web URL */}
+                {photoMode === "url" && (
+                  <div className="space-y-2">
+                    <div className="relative flex items-center">
+                      <LinkIcon className="w-4 h-4 absolute left-3.5 text-stone-400 pointer-events-none" />
+                      <input
+                        type="url"
+                        name="photo"
+                        value={formData.photo}
+                        onChange={handleChange}
+                        placeholder="https://images.unsplash.com/..."
+                        className="w-full h-11 pl-10 pr-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-[#1C1917] text-stone-900 dark:text-stone-100 text-sm focus:outline-none focus:border-[#059669] focus:ring-2 focus:ring-[#D1FAE5] dark:focus:ring-[#059669]/30 transition"
+                      />
+                    </div>
+
+                    {photoPreview && (
+                      <div className="flex items-center space-x-3 p-2 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/40">
+                        <img
+                          src={photoPreview}
+                          alt="Preview URL"
+                          onError={(e) => { e.currentTarget.style.display = "none"; }}
+                          className="w-9 h-9 rounded-full object-cover border border-stone-300"
+                        />
+                        <span className="text-xs text-stone-500 truncate flex-1">{formData.photo}</span>
+                        <button
+                          type="button"
+                          onClick={clearPhoto}
+                          className="p-1 text-stone-400 hover:text-red-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Password Input */}

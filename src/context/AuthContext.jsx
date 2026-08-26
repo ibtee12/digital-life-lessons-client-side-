@@ -3,7 +3,7 @@ import {
   signInWithPopup, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
-  updateProfile, 
+  updateProfile,
   signOut, 
   onAuthStateChanged 
 } from "firebase/auth";
@@ -17,7 +17,7 @@ const INITIAL_LESSONS = [
     id: "lesson-1",
     title: "The Art of Saying No Without Feeling Guilty",
     description: "Boundaries are not walls to keep people out; they are bridges that define where you end and others begin.",
-    content: "Early in my career, I agreed to every request, deadline, and project pushed my way. I believed that saying yes was the only way to demonstrate value and loyalty. But by constantly pleasing others, I was quietly sabotaging my own peace, energy, and work quality.\n\n### 1. Protect Your Core Energy\nYour time is a non-renewable resource. Every time you say yes to something non-essential, you are implicitly saying no to your primary goals, your health, or your loved ones.\n\n### 2. Standard Scripts for Graceful Refusal\n- Thank you for thinking of me! Right now, my focus is fully committed to X, so I won wrong be able to give this the attention it deserves.\n- I would love to help, but I cannot take on new commitments this month.\n\nRemember: A clear no up front is always kinder than a delayed, resentful yes.",
+    content: "Early in my career, I agreed to every request, deadline, and project pushed my way. I believed that saying yes was the only way to demonstrate value and loyalty. But by constantly pleasing others, I was quietly sabotaging my own peace, energy, and work quality.\n\n### 1. Protect Your Core Energy\nYour time is a non-renewable resource. Every time you say yes to something non-essential, you are implicitly saying no to your primary goals, your health, or your loved ones.\n\n### 2. Standard Scripts for Graceful Refusal\n- Thank you for thinking of me! Right now, my focus is fully committed to X, so I won't be able to give this the attention it deserves.\n- I would love to help, but I cannot take on new commitments this month.\n\nRemember: A clear no up front is always kinder than a delayed, resentful yes.",
     category: "Personal Growth",
     emotionalTone: "Empowering",
     accessLevel: "Free",
@@ -26,93 +26,135 @@ const INITIAL_LESSONS = [
     isReviewed: true,
     createdAt: "2026-08-01T10:00:00Z",
     updatedAt: "2026-08-01T10:00:00Z",
-    creatorId: "user-101",
+    creatorId: "user-marcus",
     creatorName: "Marcus Vance",
     creatorPhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
-    creatorLessonsCount: 14,
-    image: "https://images.unsplash.com/photo-1499209974431-9dac3ada00d7?auto=format&fit=crop&w=800&q=80",
-    likes: ["user-102", "user-103"],
-    likesCount: 124,
-    favoritesCount: 45,
-    viewsCount: 1280,
+    creatorLessonsCount: 8,
+    likes: ["user-current", "user-sarah"],
+    likesCount: 142,
+    favoritesCount: 89,
+    viewsCount: 1250,
     comments: [
       {
         id: "c-1",
-        userId: "user-102",
-        userName: "Elena Rostova",
-        userPhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
-        text: "This insight completely shifted how I manage my workload. Essential read!",
-        createdAt: "2026-08-02T14:30:00Z"
+        userId: "user-sarah",
+        userName: "Sarah Lin",
+        userPhoto: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+        text: "This transformed how I handle client scope creep. The standard scripts are gold!",
+        createdAt: "2026-08-02T14:20:00Z"
       }
     ]
   },
   {
     id: "lesson-2",
-    title: "Mastering the 80/20 Rule in Career Breakthroughs",
-    description: "Identify the 20% of effort that produces 80% of your career results, and double down relentlessly.",
-    content: "The Pareto Principle applies to almost every aspect of professional execution. In software engineering, 20% of bugs cause 80% of system crashes. In sales, 20% of clients generate 80% of revenue.\n\n### How to Apply Pareto Audits Weekly\n1. List your top 10 weekly tasks.\n2. Highlight the 2 tasks that directly move the needle for your team or business.\n3. Automate, delegate, or eliminate the remaining 8 tasks.",
-    category: "Career & Leadership",
-    emotionalTone: "Analytical",
+    title: "Mastering Emotional Agility Under High Stress",
+    description: "Stress is not what happens to us; it is our emotional reaction to events that we often cannot control.",
+    content: "When high-stakes deadlines hit, our primitive threat response triggers panic. Emotional agility is the ability to observe your thoughts and feelings without being hooked by them.\n\n### The 3-Second Cognitive Pause\n1. Notice physical tension\n2. Label the emotion ('I am noticing feelings of overwhelm')\n3. Align action with your ultimate values rather than immediate impulse.",
+    category: "Mindset",
+    emotionalTone: "Philosophical",
     accessLevel: "Free",
     visibility: "Public",
     isFeatured: true,
     isReviewed: true,
-    createdAt: "2026-08-03T12:00:00Z",
-    updatedAt: "2026-08-03T12:00:00Z",
-    creatorId: "user-102",
-    creatorName: "Elena Rostova",
-    creatorPhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
-    creatorLessonsCount: 28,
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
-    likes: ["user-101"],
-    likesCount: 310,
-    favoritesCount: 120,
+    createdAt: "2026-08-03T11:30:00Z",
+    updatedAt: "2026-08-03T11:30:00Z",
+    creatorId: "user-elena",
+    creatorName: "Dr. Elena Rostova",
+    creatorPhoto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 14,
+    likes: ["user-current"],
+    likesCount: 238,
+    favoritesCount: 110,
     viewsCount: 2400,
     comments: []
   },
   {
     id: "lesson-3",
-    title: "Financial Independence: The Power of Asymmetric Bets",
-    description: "How to structure risk so that downside is strictly capped while upside remains virtually unlimited.",
-    content: "Asymmetric risk management means putting yourself in positions where you have little to lose and everything to gain.\n\nExamples of Asymmetric Bets:\n- Publishing high-value content online (Cost: 2 hours of time; Upside: Global network, consulting opportunities).\n- Reaching out to industry leaders directly (Cost: 1 minute email; Upside: Life-changing mentorship).",
-    category: "Finance & Wealth",
-    emotionalTone: "Strategic",
-    accessLevel: "Premium",
+    title: "Compound Habits: The Invisible Math of 1% Daily Improvements",
+    description: "Success is the product of daily habits—not once-in-a-lifetime transformations.",
+    content: "We often convince ourselves that massive success requires massive action. Whether it is losing weight, building a business, or writing a book, we put pressure on ourselves to make some earth-shattering improvement that everyone will talk about.\n\nMeanwhile, improving by 1 percent isn't particularly notable— sometimes it isn't even noticeable—but it can be far more meaningful in the long run.",
+    category: "Productivity",
+    emotionalTone: "Motivational",
+    accessLevel: "Free",
     visibility: "Public",
-    isFeatured: true,
+    isFeatured: false,
     isReviewed: true,
-    createdAt: "2026-08-05T09:15:00Z",
-    updatedAt: "2026-08-05T09:15:00Z",
-    creatorId: "user-103",
-    creatorName: "David Sterling",
-    creatorPhoto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
-    creatorLessonsCount: 42,
-    image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80",
-    likes: ["user-101", "user-102"],
-    likesCount: 890,
-    favoritesCount: 410,
-    viewsCount: 5600,
+    createdAt: "2026-08-04T09:00:00Z",
+    updatedAt: "2026-08-04T09:00:00Z",
+    creatorId: "user-marcus",
+    creatorName: "Marcus Vance",
+    creatorPhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 8,
+    likes: [],
+    likesCount: 95,
+    favoritesCount: 42,
+    viewsCount: 890,
     comments: []
   },
   {
     id: "lesson-4",
-    title: "The Silent Power of Daily Gratitude Audits",
-    description: "Gratitude is not just a warm feeling; it is a neurological re-wire that shifts your subconscious focus from scarcity to abundance.",
-    content: "Every morning before opening emails or news, write down three hyper-specific things you appreciate. Not generic concepts like family, but specific moments like the warmth of coffee on a cold morning.",
-    category: "Mindset",
-    emotionalTone: "Gratitude",
+    title: "Executive Wealth Blueprint: Capital Allocation for Creators",
+    description: "Deep dive into equity structures, automated investments, and royalty architectures for independent thinkers.",
+    content: "Wealth is assets that earn while you sleep. Money is how we transfer time and wealth. Status is your place in the social hierarchy.\n\n### 1. Own Equity\nYou are not going to get rich renting out your time. You must own equity—a piece of a business—to gain your financial freedom.\n\n### 2. Specific Knowledge\nArm yourself with specific knowledge, accountability, and leverage. Specific knowledge is knowledge that you cannot be trained for. If society can train you, it can train someone else, and replace you.",
+    category: "Career",
+    emotionalTone: "Empowering",
+    accessLevel: "Premium",
+    visibility: "Public",
+    isFeatured: true,
+    isReviewed: true,
+    createdAt: "2026-08-05T14:15:00Z",
+    updatedAt: "2026-08-05T14:15:00Z",
+    creatorId: "user-naval",
+    creatorName: "Naval K.",
+    creatorPhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 22,
+    likes: ["user-sarah"],
+    likesCount: 480,
+    favoritesCount: 310,
+    viewsCount: 5600,
+    comments: []
+  },
+  {
+    id: "lesson-5",
+    title: "Radical Candor in Remote Leadership Teams",
+    description: "Care personally while challenging directly to build unbreakable high-trust engineering cultures.",
+    content: "Radical Candor is the sweet spot between leaders who are obnoxiously aggressive and those who are ruinously empathetic.\n\nTo implement Radical Candor:\n1. Solicit feedback before giving it\n2. Give feedback immediately and privately\n3. Praise in public, criticize in private\n4. Make it about the work, never the person.",
+    category: "Leadership",
+    emotionalTone: "Reflective",
     accessLevel: "Premium",
     visibility: "Public",
     isFeatured: false,
     isReviewed: true,
-    createdAt: "2026-08-06T08:00:00Z",
-    updatedAt: "2026-08-06T08:00:00Z",
-    creatorId: "user-104",
-    creatorName: "Aria Chen",
-    creatorPhoto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80",
-    creatorLessonsCount: 19,
-    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80",
-    likes: ["user-101", "user-104"],
+    createdAt: "2026-08-06T16:45:00Z",
+    updatedAt: "2026-08-06T16:45:00Z",
+    creatorId: "user-elena",
+    creatorName: "Dr. Elena Rostova",
+    creatorPhoto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 14,
+    likes: ["user-current"],
+    likesCount: 312,
+    favoritesCount: 180,
+    viewsCount: 3400,
+    comments: []
+  },
+  {
+    id: "lesson-6",
+    title: "Stoic Resilience: Turning Obstacles into Pure Fuel",
+    description: "The impediment to action advances action. What stands in the way becomes the way.",
+    content: "Our actions may be impeded, but there can be no impeding our intentions or dispositions. Because we can accommodate and adapt. The mind adapts and converts to its own purposes the obstacle to our acting.\n\nPractice mental reframing daily: Every setback is an opportunity for virtue practice.",
+    category: "Mindset",
+    emotionalTone: "Philosophical",
+    accessLevel: "Free",
+    visibility: "Public",
+    isFeatured: true,
+    isReviewed: true,
+    createdAt: "2026-08-07T08:20:00Z",
+    updatedAt: "2026-08-07T08:20:00Z",
+    creatorId: "user-marcus",
+    creatorName: "Marcus Aurelius Scholar",
+    creatorPhoto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 5,
+    likes: ["user-current", "user-sarah"],
     likesCount: 1540,
     favoritesCount: 890,
     viewsCount: 9200,
@@ -122,10 +164,10 @@ const INITIAL_LESSONS = [
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({
-    id: "user-current",
-    name: "Nahyan Ahmed",
-    email: "nahyan@example.com",
-    photo: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80",
+    id: null,
+    name: "",
+    email: "",
+    photo: "",
     role: "user",
     isPremium: false,
     isLoggedIn: false
@@ -142,59 +184,80 @@ export const AuthProvider = ({ children }) => {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const syncUserDoc = async (fbUser) => {
-    try {
-      const userRef = doc(db, "users", fbUser.uid);
-      const userSnap = await getDoc(userRef);
+  // Fast background Firestore sync that NEVER hangs authentication
+  const syncUserDocInBackground = (fbUser, customData = {}) => {
+    // Run entirely asynchronous without blocking user login
+    (async () => {
+      try {
+        const userRef = doc(db, "users", fbUser.uid);
+        
+        // 1.5s timeout promise so slow database connection NEVER hangs the app
+        const fetchWithTimeout = Promise.race([
+          getDoc(userRef),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Firestore timeout")), 1500))
+        ]);
 
-      let userData = {
-        name: fbUser.displayName || fbUser.email?.split("@")[0] || "User",
-        email: fbUser.email || "",
-        photo: fbUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80",
-        role: "user",
-        isPremium: false,
-        createdAt: new Date().toISOString()
-      };
+        const userSnap = await fetchWithTimeout;
 
-      if (userSnap.exists()) {
-        const existing = userSnap.data();
-        userData = { ...userData, ...existing };
-      } else {
-        await setDoc(userRef, userData);
+        let userData = {
+          name: fbUser.displayName || fbUser.email?.split("@")[0] || "User",
+          email: fbUser.email || "",
+          photo: fbUser.photoURL || "",
+          role: "user",
+          isPremium: false,
+          createdAt: new Date().toISOString(),
+          ...customData
+        };
+
+        if (userSnap && userSnap.exists()) {
+          const existing = userSnap.data();
+          userData = { ...userData, ...existing };
+        } else {
+          setDoc(userRef, userData, { merge: true }).catch(() => {});
+        }
+
+        setUser(prev => ({
+          ...prev,
+          id: fbUser.uid,
+          name: userData.name || prev.name,
+          email: userData.email || prev.email,
+          photo: userData.photo || prev.photo,
+          role: userData.role || "user",
+          isPremium: userData.isPremium || false,
+          isLoggedIn: true
+        }));
+      } catch (err) {
+        console.warn("Firestore sync skipped or timed out:", err.message);
       }
-
-      setUser({
-        id: fbUser.uid,
-        name: userData.name,
-        email: userData.email,
-        photo: userData.photo,
-        role: userData.role || "user",
-        isPremium: userData.isPremium || false,
-        isLoggedIn: true
-      });
-    } catch (err) {
-      console.error("Error syncing Firestore user document:", err);
-      setUser({
-        id: fbUser.uid,
-        name: fbUser.displayName || "User",
-        email: fbUser.email || "",
-        photo: fbUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80",
-        role: "user",
-        isPremium: false,
-        isLoggedIn: true
-      });
-    }
+    })();
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
       if (fbUser) {
-        await syncUserDoc(fbUser);
+        // 1. Instantly set user state from Firebase Auth token (0ms lag)
+        setUser({
+          id: fbUser.uid,
+          name: fbUser.displayName || fbUser.email?.split("@")[0] || "User",
+          email: fbUser.email || "",
+          photo: fbUser.photoURL || "",
+          role: "user",
+          isPremium: false,
+          isLoggedIn: true
+        });
+
+        // 2. Sync profile details from Firestore in the background
+        syncUserDocInBackground(fbUser);
       } else {
-        setUser(prev => ({
-          ...prev,
+        setUser({
+          id: null,
+          name: "",
+          email: "",
+          photo: "",
+          role: "user",
+          isPremium: false,
           isLoggedIn: false
-        }));
+        });
       }
       setLoading(false);
     });
@@ -205,12 +268,28 @@ export const AuthProvider = ({ children }) => {
   const loginWithGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      await syncUserDoc(result.user);
+      
+      // Instantly set user in state
+      setUser({
+        id: result.user.uid,
+        name: result.user.displayName || "User",
+        email: result.user.email || "",
+        photo: result.user.photoURL || "",
+        role: "user",
+        isPremium: false,
+        isLoggedIn: true
+      });
+
+      syncUserDocInBackground(result.user);
       showToast(`Welcome back, ${result.user.displayName || "User"}!`, "success");
       return result.user;
     } catch (err) {
       console.error("Google sign in error:", err);
-      showToast(err.message || "Failed to sign in with Google", "error");
+      let msg = err.message || "Failed to sign in with Google";
+      if (err.code === "auth/popup-closed-by-user") {
+        msg = "Sign in popup was closed. Please try again.";
+      }
+      showToast(msg, "error");
       throw err;
     }
   };
@@ -218,7 +297,18 @@ export const AuthProvider = ({ children }) => {
   const loginWithEmail = async (email, password) => {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
-      await syncUserDoc(result.user);
+      
+      setUser({
+        id: result.user.uid,
+        name: result.user.displayName || email.split("@")[0],
+        email: result.user.email || email,
+        photo: result.user.photoURL || "",
+        role: "user",
+        isPremium: false,
+        isLoggedIn: true
+      });
+
+      syncUserDocInBackground(result.user);
       showToast("Logged in successfully!", "success");
       return result.user;
     } catch (err) {
@@ -235,25 +325,15 @@ export const AuthProvider = ({ children }) => {
   const registerWithEmail = async (name, email, password, photo) => {
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password);
-      const userPhoto = photo || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80";
+      const userPhoto = photo || "";
 
-      await updateProfile(result.user, {
+      // Update Firebase Auth profile in parallel
+      updateProfile(result.user, {
         displayName: name,
         photoURL: userPhoto
-      });
+      }).catch(() => {});
 
-      const userRef = doc(db, "users", result.user.uid);
-      const userData = {
-        name,
-        email,
-        photo: userPhoto,
-        role: "user",
-        isPremium: false,
-        createdAt: new Date().toISOString()
-      };
-
-      await setDoc(userRef, userData);
-
+      // Instantly activate user state (0 delay)
       setUser({
         id: result.user.uid,
         name,
@@ -264,13 +344,22 @@ export const AuthProvider = ({ children }) => {
         isLoggedIn: true
       });
 
+      // Save to Firestore in background
+      syncUserDocInBackground(result.user, { name, email, photo: userPhoto });
+
       showToast("Account created successfully!", "success");
       return result.user;
     } catch (err) {
       console.error("Registration error:", err);
       let msg = err.message || "Failed to create account.";
-      if (err.code === "auth/email-already-in-use") {
-        msg = "An account with this email already exists.";
+      if (err.code === "auth/operation-not-allowed") {
+        msg = "Email/Password sign-in is disabled in your Firebase Console. Please enable Email/Password under Authentication -> Sign-in method in Firebase Console.";
+      } else if (err.code === "auth/email-already-in-use") {
+        msg = "An account with this email address already exists. Please log in instead.";
+      } else if (err.code === "auth/weak-password") {
+        msg = "The password is too weak. Please use at least 6 characters with uppercase and lowercase letters.";
+      } else if (err.code === "auth/invalid-email") {
+        msg = "The email address format is invalid.";
       }
       showToast(msg, "error");
       throw err;
