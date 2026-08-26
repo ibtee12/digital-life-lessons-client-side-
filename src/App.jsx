@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { HomePage } from "./pages/HomePage";
 import { LessonsPage } from "./pages/LessonsPage";
 import { LessonDetailPage } from "./pages/LessonDetailPage";
@@ -10,6 +10,10 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { CreatorPublicProfile } from "./pages/CreatorPublicProfile";
 import { NotFoundPage } from "./pages/NotFoundPage";
+
+// Security Route Guards
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AdminRoute } from "./components/AdminRoute";
 
 // Dashboard Layout & User Pages
 import { DashboardLayout } from "./layouts/DashboardLayout";
@@ -40,9 +44,16 @@ export default function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/author/:id" element={<CreatorPublicProfile />} />
 
-      {/* Protected Dashboard Routes */}
-      <Route path="/dashboard" element={<DashboardLayout />}>
-        {/* User Routes */}
+      {/* Protected Member & Admin Dashboard Routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }
+      >
+        {/* User Workspace Routes */}
         <Route index element={<DashboardHome />} />
         <Route path="add-lesson" element={<AddLessonPage />} />
         <Route path="my-lessons" element={<MyLessonsPage />} />
@@ -51,15 +62,71 @@ export default function App() {
         <Route path="my-favorites" element={<MyFavoritesPage />} />
         <Route path="profile" element={<ProfilePage />} />
 
-        {/* Admin Routes */}
-        <Route path="admin" element={<AdminDashboardHome />} />
-        <Route path="admin/users" element={<AdminManageUsers />} />
-        <Route path="admin/manage-users" element={<AdminManageUsers />} />
-        <Route path="admin/lessons" element={<AdminManageLessons />} />
-        <Route path="admin/manage-lessons" element={<AdminManageLessons />} />
-        <Route path="admin/reports" element={<AdminReportedLessons />} />
-        <Route path="admin/reported-lessons" element={<AdminReportedLessons />} />
-        <Route path="admin/profile" element={<AdminProfilePage />} />
+        {/* Strict Protected Admin Only Routes */}
+        <Route
+          path="admin"
+          element={
+            <AdminRoute>
+              <AdminDashboardHome />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/users"
+          element={
+            <AdminRoute>
+              <AdminManageUsers />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/manage-users"
+          element={
+            <AdminRoute>
+              <AdminManageUsers />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/lessons"
+          element={
+            <AdminRoute>
+              <AdminManageLessons />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/manage-lessons"
+          element={
+            <AdminRoute>
+              <AdminManageLessons />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/reports"
+          element={
+            <AdminRoute>
+              <AdminReportedLessons />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/reported-lessons"
+          element={
+            <AdminRoute>
+              <AdminReportedLessons />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/profile"
+          element={
+            <AdminRoute>
+              <AdminProfilePage />
+            </AdminRoute>
+          }
+        />
       </Route>
 
       {/* 404 Custom Not Found Route */}

@@ -142,7 +142,7 @@ export const HeroSlider = () => {
             >
               <Link
                 to={activeSlide.ctaLink}
-                className="inline-flex items-center space-x-2 px-6.5 py-3.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-sm sm:text-base shadow-xl shadow-[#059669]/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                className="inline-flex items-center space-x-2 px-7 sm:px-8 py-3.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-sm sm:text-base shadow-xl shadow-[#059669]/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
               >
                 <span>{activeSlide.ctaText}</span>
                 <ArrowRight className="w-4.5 h-4.5" />

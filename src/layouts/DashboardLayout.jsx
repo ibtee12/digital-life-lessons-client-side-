@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { Outlet, NavLink, Link, useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, BookOpen, PlusCircle, Heart, Star, ShieldAlert, Users, FileText, 
-  LogOut, Menu, X, Sun, Moon, Bell, ArrowLeft
+  LogOut, Menu, X, Sun, Moon, Bell, ArrowRight, Home, ShieldCheck
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import { NotificationDrawer } from "../components/NotificationDrawer";
 
 const UserAvatar = ({ user, className = "w-10 h-10" }) => {
   const [imgError, setImgError] = useState(false);
@@ -43,6 +44,7 @@ export const DashboardLayout = () => {
   const { user, logoutUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -81,16 +83,20 @@ export const DashboardLayout = () => {
       {/* Desktop Fixed Left Sidebar */}
       <aside className="hidden lg:flex flex-col w-[280px] bg-white dark:bg-[#1C1917] border-r border-[#E7E5E4] dark:border-[#44403C] fixed inset-y-0 left-0 z-40 shadow-sm">
         
-        {/* Brand Header */}
+        {/* Brand Header — Fully Clickable to Home Page */}
         <div className="h-[72px] px-6 border-b border-[#E7E5E4] dark:border-[#44403C] flex items-center">
-          <Link to="/" className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#059669] to-[#0D9488] p-1.5 flex items-center justify-center text-white shadow-sm">
+          <Link 
+            to="/" 
+            className="flex items-center space-x-2.5 group cursor-pointer w-full"
+            title="Go to Home Page"
+          >
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#059669] to-[#0D9488] p-2 flex items-center justify-center text-white shadow-md shadow-[#059669]/20 group-hover:scale-105 transition-transform flex-shrink-0">
               <svg className="w-full h-full fill-none stroke-current stroke-2" viewBox="0 0 24 24">
                 <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
                 <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
               </svg>
             </div>
-            <span className="font-extrabold text-base tracking-tight text-stone-900 dark:text-stone-100">
+            <span className="font-extrabold text-base tracking-tight text-stone-900 dark:text-stone-100 group-hover:text-[#059669] dark:group-hover:text-[#34D399] transition-colors">
               Digital Life Lessons
             </span>
           </Link>
@@ -124,14 +130,27 @@ export const DashboardLayout = () => {
           })}
         </div>
 
-        {/* Back to Public Site Link */}
-        <div className="px-4 py-2 border-t border-[#E7E5E4] dark:border-[#44403C]">
+        {/* Beautiful "Back to Home Page" Button at Left Bottom */}
+        <div className="p-3 border-t border-[#E7E5E4] dark:border-[#44403C]">
           <Link
             to="/"
-            className="flex items-center space-x-2 text-xs font-semibold text-stone-500 hover:text-[#059669] py-2"
+            className="w-full p-2.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 dark:from-emerald-950/40 dark:via-teal-950/40 dark:to-emerald-950/40 border border-emerald-500/20 dark:border-emerald-500/30 text-stone-800 dark:text-stone-200 hover:border-emerald-500/50 hover:bg-emerald-500/15 transition-all group flex items-center justify-between shadow-2xs cursor-pointer"
+            title="Return to main home page"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Main Website</span>
+            <div className="flex items-center space-x-2.5">
+              <div className="w-8 h-8 rounded-xl bg-white dark:bg-[#1C1917] flex items-center justify-center text-[#059669] dark:text-[#34D399] shadow-xs group-hover:-translate-x-0.5 transition-transform">
+                <Home className="w-4 h-4" />
+              </div>
+              <div className="text-left">
+                <p className="text-xs font-extrabold text-stone-900 dark:text-stone-100 group-hover:text-[#059669] dark:group-hover:text-[#34D399] transition-colors">
+                  Back to Home Page
+                </p>
+                <p className="text-[10px] text-stone-400 font-medium">
+                  Return to main website
+                </p>
+              </div>
+            </div>
+            <ArrowRight className="w-3.5 h-3.5 text-stone-400 group-hover:translate-x-0.5 group-hover:text-[#059669] transition-all" />
           </Link>
         </div>
 
@@ -155,7 +174,7 @@ export const DashboardLayout = () => {
                 )}
                 {user.role === "admin" && (
                   <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300">
-                    Admin
+                    Admin 🛡️
                   </span>
                 )}
               </div>
@@ -198,10 +217,15 @@ export const DashboardLayout = () => {
               {theme === "dark" ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5" />}
             </button>
 
-            {/* Notifications */}
-            <button className="p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 relative transition cursor-pointer">
+            {/* Notifications Button with Active Drawer */}
+            <button 
+              onClick={() => setNotificationsOpen(true)}
+              className="p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 relative transition cursor-pointer"
+              title="View Notifications"
+              aria-label="Open notifications"
+            >
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#059669]" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#059669] ring-2 ring-white dark:ring-[#1C1917]" />
             </button>
 
             {/* Avatar */}
@@ -258,7 +282,19 @@ export const DashboardLayout = () => {
               })}
             </div>
 
-            <div className="pt-4 border-t border-stone-200 dark:border-stone-800">
+            {/* Mobile Back to Home */}
+            <div className="py-3 border-t border-stone-200 dark:border-stone-800">
+              <Link
+                to="/"
+                onClick={() => setMobileDrawerOpen(false)}
+                className="w-full p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-[#059669] dark:text-[#34D399] font-bold text-xs flex items-center justify-center space-x-2"
+              >
+                <Home className="w-4 h-4" />
+                <span>Back to Home Page</span>
+              </Link>
+            </div>
+
+            <div className="pt-2 border-t border-stone-200 dark:border-stone-800">
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center justify-center space-x-2 py-2.5 rounded-xl border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 font-semibold text-xs cursor-pointer"
@@ -270,6 +306,12 @@ export const DashboardLayout = () => {
           </div>
         </div>
       )}
+
+      {/* Global Notification Drawer */}
+      <NotificationDrawer
+        isOpen={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+      />
 
     </div>
   );

@@ -12,6 +12,17 @@ import { auth, googleProvider, db } from "../firebase/config";
 
 const AuthContext = createContext();
 
+// Designated Administrator Email Accounts
+const ADMIN_EMAILS = [
+  "admin@digitallife.com",
+  "admin@gmail.com"
+];
+
+const checkIsAdmin = (email) => {
+  if (!email) return false;
+  return ADMIN_EMAILS.includes(email.toLowerCase().trim());
+};
+
 const INITIAL_LESSONS = [
   {
     id: "lesson-1",
@@ -235,14 +246,14 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
       if (fbUser) {
-        // 1. Instantly set user state from Firebase Auth token (0ms lag)
+        const isAdmin = checkIsAdmin(fbUser.email);
         setUser({
           id: fbUser.uid,
           name: fbUser.displayName || fbUser.email?.split("@")[0] || "User",
           email: fbUser.email || "",
           photo: fbUser.photoURL || "",
-          role: "user",
-          isPremium: false,
+          role: isAdmin ? "admin" : "user",
+          isPremium: isAdmin ? true : false,
           isLoggedIn: true
         });
 
@@ -269,14 +280,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       
-      // Instantly set user in state
+      const isAdmin = checkIsAdmin(result.user.email);
       setUser({
         id: result.user.uid,
         name: result.user.displayName || "User",
         email: result.user.email || "",
         photo: result.user.photoURL || "",
-        role: "user",
-        isPremium: false,
+        role: isAdmin ? "admin" : "user",
+        isPremium: isAdmin ? true : false,
         isLoggedIn: true
       });
 
@@ -298,13 +309,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
       
+      const isAdmin = checkIsAdmin(result.user.email || email);
       setUser({
         id: result.user.uid,
         name: result.user.displayName || email.split("@")[0],
         email: result.user.email || email,
         photo: result.user.photoURL || "",
-        role: "user",
-        isPremium: false,
+        role: isAdmin ? "admin" : "user",
+        isPremium: isAdmin ? true : false,
         isLoggedIn: true
       });
 

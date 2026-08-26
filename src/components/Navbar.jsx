@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Sun, Moon, Menu, X, Star, User, LayoutDashboard, LogOut, Crown, ChevronDown, Bell
+  Sun, Moon, Menu, X, Star, User, LayoutDashboard, LogOut, ShieldCheck, 
+  ChevronDown, Bell, Settings
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
@@ -42,13 +43,32 @@ const UserAvatar = ({ user, className = "w-9 h-9" }) => {
 
 export const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
-  const { user, toggleDemoRole, logoutUser } = useAuth();
+  const { user, logoutUser } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [evaluatorOpen, setEvaluatorOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const location = useLocation();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    if (userDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [userDropdownOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,13 +90,11 @@ export const Navbar = () => {
     await logoutUser();
   };
 
+  // Clean, consistent public navigation links
   const navLinks = [
     { label: "Home", path: "/" },
     { label: "Public Lessons", path: "/lessons" },
-    ...(user.isLoggedIn ? [
-      { label: "Add Lesson", path: "/dashboard/add-lesson" },
-      { label: "My Lessons", path: "/dashboard/my-lessons" },
-    ] : []),
+    { label: "Pricing", path: "/pricing" }
   ];
 
   return (
@@ -90,19 +108,19 @@ export const Navbar = () => {
       <div className="max-w-[1280px] mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         
         {/* Left: Brand Logo */}
-        <Link to="/" className="flex items-center space-x-2.5 group">
+        <Link to="/" className="flex items-center space-x-2.5 group cursor-pointer">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#059669] to-[#0D9488] p-2 flex items-center justify-center text-white shadow-md shadow-[#059669]/20 group-hover:scale-105 transition-transform">
             <svg className="w-full h-full fill-none stroke-current stroke-2" viewBox="0 0 24 24">
               <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
               <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
             </svg>
           </div>
-          <span className="font-extrabold text-xl tracking-tight text-[#1C1917] dark:text-[#FAFAF9]">
+          <span className="font-extrabold text-xl tracking-tight text-[#1C1917] dark:text-[#FAFAF9] group-hover:text-[#059669] transition-colors">
             Digital Life Lessons
           </span>
         </Link>
 
-        {/* Desktop Nav Links */}
+        {/* Desktop Nav Links: Clean Home, Public Lessons, Pricing */}
         <nav className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => {
             const isActive = location.pathname === link.path;
@@ -113,7 +131,7 @@ export const Navbar = () => {
                 className={({ isActive }) =>
                   `relative py-1 font-medium text-sm transition-colors duration-200 ${
                     isActive
-                      ? "text-[#059669] dark:text-[#34D399]"
+                      ? "text-[#059669] dark:text-[#34D399] font-bold"
                       : "text-[#57534E] dark:text-[#A8A29E] hover:text-[#059669] dark:hover:text-[#34D399]"
                   }`
                 }
@@ -130,32 +148,13 @@ export const Navbar = () => {
             );
           })}
 
-          {/* Pricing Link / Premium Badge */}
-          {user.isLoggedIn && !user.isPremium ? (
-            <NavLink
-              to="/pricing"
-              className={({ isActive }) =>
-                `relative py-1 font-medium text-sm transition-colors duration-200 ${
-                  isActive
-                    ? "text-[#059669] dark:text-[#34D399]"
-                    : "text-[#57534E] dark:text-[#A8A29E] hover:text-[#059669] dark:hover:text-[#34D399]"
-                }`
-              }
-            >
-              Pricing
-              {location.pathname === "/pricing" && (
-                <motion.div
-                  layoutId="nav-dot"
-                  className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#059669]"
-                />
-              )}
-            </NavLink>
-          ) : user.isLoggedIn && user.isPremium ? (
+          {/* Premium Member Badge (if applicable) */}
+          {user.isLoggedIn && user.isPremium && (
             <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-bold bg-[#FFFBEB] dark:bg-[#F59E0B]/20 text-[#B45309] dark:text-[#FBBF24] border border-[#FCD34D] dark:border-[#F59E0B]/40 shadow-2xs">
               <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
               <span>Premium ⭐</span>
             </span>
-          ) : null}
+          )}
         </nav>
 
         {/* Right Actions */}
@@ -166,6 +165,7 @@ export const Navbar = () => {
             onClick={() => setNotificationsOpen(true)}
             className="p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition relative cursor-pointer"
             aria-label="Open notifications"
+            title="Notifications"
           >
             <Bell className="w-5 h-5 text-stone-600 dark:text-stone-300" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#059669] ring-2 ring-white dark:ring-[#0C0A09]" />
@@ -176,53 +176,74 @@ export const Navbar = () => {
             onClick={toggleTheme}
             className="p-2 rounded-xl border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer"
             aria-label="Toggle Theme"
+            title="Toggle theme"
           >
             {theme === "dark" ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-stone-600" />}
           </button>
 
           {/* User Auth Controls */}
           {user.isLoggedIn ? (
-            <div className="relative">
+            <div className="relative flex items-center space-x-2.5" ref={dropdownRef}>
+              
+              {/* Dedicated Dashboard Button */}
+              <Link
+                to={user.role === "admin" ? "/dashboard/admin" : "/dashboard"}
+                className="hidden sm:inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[#ECFDF5] dark:bg-[#059669]/15 text-[#059669] dark:text-[#34D399] border border-emerald-500/20 font-bold text-xs hover:bg-[#059669] hover:text-white transition shadow-2xs cursor-pointer"
+              >
+                {user.role === "admin" ? <ShieldCheck className="w-3.5 h-3.5" /> : <LayoutDashboard className="w-3.5 h-3.5" />}
+                <span>{user.role === "admin" ? "Admin Panel" : "Dashboard"}</span>
+              </Link>
+
+              {/* Avatar Dropdown Trigger */}
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center space-x-2 p-0.5 rounded-full border border-stone-200 dark:border-stone-700 hover:ring-2 hover:ring-[#059669]/30 transition cursor-pointer"
+                className="flex items-center p-0.5 rounded-full border border-stone-200 dark:border-stone-700 hover:ring-2 hover:ring-[#059669]/30 transition cursor-pointer"
+                title="User Profile Menu"
               >
                 <UserAvatar user={user} className="w-9 h-9" />
               </button>
 
-              {/* User Dropdown */}
+              {/* Clean, Minimal Profile Dropdown */}
               {userDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-[#292524] border border-stone-200 dark:border-stone-700 shadow-2xl p-2 z-50 text-sm">
-                  <div className="px-3 py-2 border-b border-stone-100 dark:border-stone-800 mb-1 flex items-center space-x-2.5">
+                <div className="absolute right-0 top-12 mt-1 w-56 rounded-2xl bg-white dark:bg-[#292524] border border-stone-200 dark:border-stone-700 shadow-2xl p-2 z-50 text-sm">
+                  
+                  {/* User Profile Header */}
+                  <div className="px-3 py-2.5 border-b border-stone-100 dark:border-stone-800 mb-1 flex items-center space-x-2.5">
                     <UserAvatar user={user} className="w-8 h-8 flex-shrink-0" />
                     <div className="overflow-hidden">
-                      <p className="font-bold text-stone-900 dark:text-stone-100 truncate">{user.name || "User"}</p>
-                      <p className="text-xs text-stone-500 dark:text-stone-400 truncate">{user.email}</p>
+                      <div className="flex items-center space-x-1.5">
+                        <p className="font-bold text-xs text-stone-900 dark:text-stone-100 truncate">{user.name || "User"}</p>
+                        {user.role === "admin" && (
+                          <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
+                            Admin
+                          </span>
+                        )}
+                        {user.isPremium && user.role !== "admin" && (
+                          <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
+                            ⭐
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-stone-400 truncate">{user.email}</p>
                     </div>
                   </div>
 
+                  {/* Profile Link */}
                   <Link
-                    to="/dashboard/profile"
-                    className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 font-medium transition"
+                    to={user.role === "admin" ? "/dashboard/admin/profile" : "/dashboard/profile"}
+                    className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 font-medium text-xs transition"
                   >
                     <User className="w-4 h-4 text-[#059669]" />
                     <span>My Profile</span>
                   </Link>
 
-                  <Link
-                    to={user.role === "admin" ? "/dashboard/admin" : "/dashboard"}
-                    className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 font-medium transition"
-                  >
-                    <LayoutDashboard className="w-4 h-4 text-[#0D9488]" />
-                    <span>Dashboard</span>
-                  </Link>
-
+                  {/* Logout Button */}
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 font-medium transition mt-1 cursor-pointer"
+                    className="w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold text-xs transition cursor-pointer mt-0.5 border-t border-stone-100 dark:border-stone-800/80 pt-2"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Logout</span>
+                    <span>Log Out</span>
                   </button>
                 </div>
               )}
@@ -269,7 +290,7 @@ export const Navbar = () => {
                 <span className="font-extrabold text-lg text-stone-900 dark:text-stone-100">Menu</span>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-1 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
+                  className="p-1 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -286,12 +307,12 @@ export const Navbar = () => {
                   </Link>
                 ))}
 
-                {user.isLoggedIn && !user.isPremium && (
+                {user.isLoggedIn && (
                   <Link
-                    to="/pricing"
-                    className="block text-base font-semibold text-[#059669]"
+                    to={user.role === "admin" ? "/dashboard/admin" : "/dashboard"}
+                    className="block text-base font-bold text-[#059669]"
                   >
-                    Upgrade to Premium
+                    {user.role === "admin" ? "Admin Panel" : "Dashboard"}
                   </Link>
                 )}
               </div>
