@@ -110,11 +110,11 @@ export const DashboardLayout = () => {
 
           {currentLinks.map((link) => {
             const Icon = link.icon;
-            const isActive = location.pathname === link.path;
             return (
               <NavLink
                 key={link.path}
                 to={link.path}
+                end
                 className={({ isActive }) =>
                   `flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${
                     isActive
@@ -266,6 +266,7 @@ export const DashboardLayout = () => {
                   <NavLink
                     key={link.path}
                     to={link.path}
+                    end
                     onClick={() => setMobileDrawerOpen(false)}
                     className={({ isActive }) =>
                       `flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${

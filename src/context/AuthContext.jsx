@@ -23,6 +23,57 @@ const checkIsAdmin = (email) => {
   return ADMIN_EMAILS.includes(email.toLowerCase().trim());
 };
 
+const INITIAL_PLATFORM_USERS = [
+  {
+    id: "user-admin",
+    name: "Platform Administrator",
+    email: "admin@digitallife.com",
+    role: "admin",
+    isPremium: true,
+    photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: "user-marcus",
+    name: "Marcus Vance",
+    email: "marcus@example.com",
+    role: "user",
+    isPremium: true,
+    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: "user-elena",
+    name: "Dr. Elena Rostova",
+    email: "elena@example.com",
+    role: "user",
+    isPremium: false,
+    photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: "user-naval",
+    name: "Naval K.",
+    email: "naval@example.com",
+    role: "user",
+    isPremium: true,
+    photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: "user-sarah",
+    name: "Sarah Lin",
+    email: "sarah@example.com",
+    role: "user",
+    isPremium: false,
+    photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: "user-alex",
+    name: "Alex Chen",
+    email: "alex@example.com",
+    role: "user",
+    isPremium: true,
+    photo: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80"
+  }
+];
+
 const INITIAL_LESSONS = [
   {
     id: "lesson-1",
@@ -186,8 +237,16 @@ export const AuthProvider = ({ children }) => {
 
   const [loading, setLoading] = useState(true);
   const [lessons, setLessons] = useState(INITIAL_LESSONS);
-  const [favorites, setFavorites] = useState(["lesson-1", "lesson-4"]);
+  const [favorites, setFavorites] = useState(() => {
+    try {
+      const saved = localStorage.getItem("dll_favorites");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [reports, setReports] = useState([]);
+  const [allUsers, setAllUsers] = useState(INITIAL_PLATFORM_USERS);
   const [toastMessage, setToastMessage] = useState(null);
 
   const showToast = (message, type = "success") => {
@@ -462,6 +521,9 @@ export const AuthProvider = ({ children }) => {
     setFavorites(prev => {
       const exists = prev.includes(lessonId);
       const updated = exists ? prev.filter(id => id !== lessonId) : [...prev, lessonId];
+      try {
+        localStorage.setItem("dll_favorites", JSON.stringify(updated));
+      } catch (e) {}
       
       setLessons(lList =>
         lList.map(l => l.id === lessonId ? { ...l, favoritesCount: exists ? l.favoritesCount - 1 : l.favoritesCount + 1 } : l)
@@ -533,6 +595,22 @@ export const AuthProvider = ({ children }) => {
     showToast("Lesson updated successfully!", "success");
   };
 
+    const toggleUserRole = (userId) => {
+    setAllUsers(prev => prev.map(u => {
+      if (u.id === userId) {
+        const newRole = u.role === "admin" ? "user" : "admin";
+        showToast(`User role updated to ${newRole.toUpperCase()}`, "success");
+        return { ...u, role: newRole };
+      }
+      return u;
+    }));
+  };
+
+  const deletePlatformUser = (userId) => {
+    setAllUsers(prev => prev.filter(u => u.id !== userId));
+    showToast("User account removed from platform", "info");
+  };
+
   const deleteLesson = (lessonId) => {
     setLessons(prev => prev.filter(l => l.id !== lessonId));
     setReports(prev => prev.filter(r => r.lessonId !== lessonId));
@@ -561,6 +639,9 @@ export const AuthProvider = ({ children }) => {
         lessons,
         favorites,
         reports,
+        allUsers,
+        toggleUserRole,
+        deletePlatformUser,
         toastMessage,
         showToast,
         loginWithGoogle,

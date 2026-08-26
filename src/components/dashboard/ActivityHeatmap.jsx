@@ -1,29 +1,46 @@
 import React, { useState } from 'react';
-import { Flame, Calendar, Sparkles } from 'lucide-react';
+import { Flame, Calendar, Sparkles, BookOpen } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export const ActivityHeatmap = () => {
+  const { user, lessons } = useAuth();
   const [hoveredCell, setHoveredCell] = useState(null);
 
-  // Generate 20 weeks of sample activity data (7 days each)
+  // User created lessons
+  const myLessons = lessons.filter((l) => l.creatorId === user.id || l.creatorName === user.name);
+  const totalInsights = myLessons.length;
+  
+  // Dynamic streak calculation: 0 if no lessons, otherwise 1 + number of lessons
+  const currentStreak = totalInsights > 0 ? Math.min(totalInsights + 1, 30) : 0;
+
+  // Generate 20 weeks of heatmap calendar
+  const now = new Date();
   const weeks = Array.from({ length: 20 }, (_, weekIdx) => {
     return Array.from({ length: 7 }, (_, dayIdx) => {
-      const isWeekend = dayIdx === 5 || dayIdx === 6;
-      // Deterministic activity levels for demo
-      const val = ((weekIdx * 7 + dayIdx * 3) % 5);
-      const count = isWeekend ? (val > 2 ? val : 0) : val;
+      const dayOffset = (19 - weekIdx) * 7 + (6 - dayIdx);
+      const dateObj = new Date(now);
+      dateObj.setDate(now.getDate() - dayOffset);
+      const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+      // Match actual lesson publication dates
+      const count = myLessons.filter(l => {
+        const lDate = new Date(l.createdAt || Date.now());
+        return lDate.toDateString() === dateObj.toDateString();
+      }).length;
+
       return {
         id: `w${weekIdx}-d${dayIdx}`,
         count,
-        date: `Day ${weekIdx * 7 + dayIdx + 1}`
+        date: dateStr
       };
     });
   });
 
   const getIntensityClass = (count) => {
     if (count === 0) return 'bg-stone-100 dark:bg-stone-800/80 border-stone-200/50 dark:border-stone-700/50';
-    if (count === 1) return 'bg-[#D1FAE5] dark:bg-[#059669]/30 border-emerald-200/60 dark:border-emerald-800/50';
-    if (count === 2) return 'bg-[#6EE7B7] dark:bg-[#059669]/60 border-emerald-300 dark:border-emerald-600/50';
-    if (count >= 3) return 'bg-[#059669] dark:bg-[#059669] border-[#047857] shadow-sm shadow-[#059669]/30';
+    if (count === 1) return 'bg-[#D1FAE5] dark:bg-[#059669]/40 border-emerald-300 dark:border-emerald-700';
+    if (count === 2) return 'bg-[#6EE7B7] dark:bg-[#059669]/70 border-emerald-400 dark:border-emerald-600';
+    if (count >= 3) return 'bg-[#059669] dark:bg-[#059669] border-[#047857] shadow-xs shadow-[#059669]/30';
     return 'bg-stone-100 dark:bg-stone-800';
   };
 
@@ -49,11 +66,15 @@ export const ActivityHeatmap = () => {
         <div className="flex items-center space-x-3">
           <div className="px-3.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 text-xs">
             <span className="text-stone-400 uppercase font-bold text-[10px] block">Current Streak</span>
-            <span className="font-extrabold text-amber-600 dark:text-amber-400 text-sm">🔥 12 Days</span>
+            <span className="font-extrabold text-amber-600 dark:text-amber-400 text-sm">
+              🔥 {currentStreak} {currentStreak === 1 ? 'Day' : 'Days'}
+            </span>
           </div>
           <div className="px-3.5 py-1.5 rounded-xl bg-[#ECFDF5] dark:bg-[#059669]/15 border border-emerald-200 dark:border-emerald-800/40 text-xs">
             <span className="text-stone-400 uppercase font-bold text-[10px] block">Total Insights</span>
-            <span className="font-extrabold text-[#059669] dark:text-[#34D399] text-sm">84 Recorded</span>
+            <span className="font-extrabold text-[#059669] dark:text-[#34D399] text-sm">
+              {totalInsights} Recorded
+            </span>
           </div>
         </div>
       </div>
@@ -69,7 +90,7 @@ export const ActivityHeatmap = () => {
                   onMouseEnter={() => setHoveredCell(day)}
                   onMouseLeave={() => setHoveredCell(null)}
                   className={`w-3.5 h-3.5 rounded-sm border transition-transform hover:scale-125 cursor-pointer ${getIntensityClass(day.count)}`}
-                  title={`${day.count} reflections logged`}
+                  title={`${day.count} reflections logged on ${day.date}`}
                 />
               ))}
             </div>
@@ -90,7 +111,7 @@ export const ActivityHeatmap = () => {
 
         {hoveredCell ? (
           <span className="font-semibold text-stone-900 dark:text-stone-100">
-            {hoveredCell.count === 0 ? 'No reflections' : `${hoveredCell.count} reflections logged`} on {hoveredCell.date}
+            {hoveredCell.count === 0 ? 'No lessons recorded' : `${hoveredCell.count} lesson${hoveredCell.count > 1 ? 's' : ''} logged`} on {hoveredCell.date}
           </span>
         ) : (
           <span>Hover over blocks to view daily insight counts</span>
