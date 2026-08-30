@@ -1,5 +1,17 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+
+// Auto scroll to top on route change
+function ScrollToTopOnNavigate() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
+
+  return null;
+}
+
 import { HomePage } from "./pages/HomePage";
 import { LessonsPage } from "./pages/LessonsPage";
 import { LessonDetailPage } from "./pages/LessonDetailPage";
@@ -33,7 +45,9 @@ import { AdminProfilePage } from "./pages/admin/AdminProfilePage";
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <ScrollToTopOnNavigate />
+      <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/lessons" element={<LessonsPage />} />
       <Route path="/lessons/:id" element={<LessonDetailPage />} />
@@ -131,6 +145,7 @@ export default function App() {
 
       {/* 404 Custom Not Found Route */}
       <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+      </Routes>
+    </>
   );
 }

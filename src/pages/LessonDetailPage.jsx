@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -32,6 +32,10 @@ export const LessonDetailPage = () => {
   }, [lessons, id]);
 
   useDocumentTitle(lesson?.title || 'Life Lesson Details');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   const isLocked = lesson.accessLevel === 'Premium' && (!user.isLoggedIn || !user.isPremium);
   const isLiked = lesson.likes?.includes(user?.id);
