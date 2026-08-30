@@ -148,8 +148,12 @@ export const DashboardLayout = () => {
                   }`
                 }
               >
-                <Icon className={`w-4 h-4 ${isActive ? "text-[#059669]" : "text-stone-400"}`} />
-                <span>{link.label}</span>
+                {({ isActive }) => (
+                  <>
+                    <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? "text-[#059669] dark:text-[#34D399]" : "text-stone-400"}`} />
+                    <span>{link.label}</span>
+                  </>
+                )}
               </NavLink>
             );
           })}
@@ -301,8 +305,12 @@ export const DashboardLayout = () => {
                       }`
                     }
                   >
-                    <Icon className="w-4 h-4" />
-                    <span>{link.label}</span>
+                    {({ isActive }) => (
+                      <>
+                        <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? "text-[#059669] dark:text-[#34D399]" : "text-stone-400"}`} />
+                        <span>{link.label}</span>
+                      </>
+                    )}
                   </NavLink>
                 );
               })}
