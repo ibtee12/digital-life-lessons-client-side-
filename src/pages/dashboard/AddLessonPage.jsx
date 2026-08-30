@@ -29,7 +29,7 @@ export const AddLessonPage = () => {
       category,
       emotionalTone,
       image: image || 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=800&q=80',
-      accessLevel: user.isPremium ? accessLevel : 'Free', // Defaults to Free if not Premium
+      accessLevel: user?.isPremium ? accessLevel : 'Free', // Defaults to Free if not Premium
       visibility,
       isFeatured: false
     };
@@ -126,7 +126,7 @@ export const AddLessonPage = () => {
               <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300">
                 Access Level
               </label>
-              {!user.isPremium && (
+              {!user?.isPremium && (
                 <span className="text-[11px] text-amber-600 dark:text-amber-400 font-medium flex items-center">
                   <Lock className="w-3 h-3 mr-1" /> Premium Only
                 </span>
@@ -134,11 +134,11 @@ export const AddLessonPage = () => {
             </div>
 
             <select
-              disabled={!user.isPremium}
+              disabled={!user?.isPremium}
               value={user.isPremium ? accessLevel : 'Free'}
               onChange={(e) => setAccessLevel(e.target.value)}
               className={`w-full h-11 px-3 rounded-xl border border-stone-200 dark:border-stone-700 text-sm font-semibold focus:outline-none ${
-                !user.isPremium
+                !user?.isPremium
                   ? 'bg-stone-100 dark:bg-stone-800 text-stone-400 cursor-not-allowed'
                   : 'bg-stone-50 dark:bg-[#1C1917] text-stone-900 dark:text-stone-100 focus:border-[#059669]'
               }`}
@@ -148,7 +148,7 @@ export const AddLessonPage = () => {
             </select>
 
             {/* Gated Rule Tooltip for Free Users */}
-            {!user.isPremium && (
+            {!user?.isPremium && (
               <div className="mt-1.5 p-2 rounded-lg bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs flex items-center space-x-1.5">
                 <Info className="w-4 h-4 flex-shrink-0" />
                 <span>Upgrade to Premium to create paid lessons.</span>

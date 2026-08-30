@@ -6,12 +6,12 @@ import { LessonCard } from '../../components/LessonCard';
 export const ProfilePage = () => {
   const { user, setUser, lessons, favorites, showToast } = useAuth();
 
-  const [name, setName] = useState(user.name);
-  const [photo, setPhoto] = useState(user.photo);
+  const [name, setName] = useState(user?.name || '');
+  const [photo, setPhoto] = useState(user?.photo || '');
 
   // Lessons created by this user
-  const userPublicLessons = lessons.filter(
-    (l) => (l.creatorId === user.id || l.creatorName === user.name) && l.visibility === 'Public'
+  const userPublicLessons = (lessons || []).filter(
+    (l) => ((user?.id && l.creatorId === user.id) || (user?.name && l.creatorName === user.name)) && l.visibility === 'Public'
   );
 
   const handleSaveProfile = (e) => {
@@ -30,13 +30,13 @@ export const ProfilePage = () => {
           {/* Avatar */}
           <div className="relative flex-shrink-0">
             <img
-              src={photo || user.photo}
+              src={photo || user?.photo || ''}
               alt={name}
               referrerPolicy="no-referrer"
               onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80"; }}
               className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover ring-4 ring-[#059669]/30 shadow-lg"
             />
-            {user.isPremium && (
+            {user?.isPremium && (
               <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-amber-400 to-amber-600 text-white p-1.5 rounded-full shadow-lg">
                 <Star className="w-4 h-4 fill-white text-white" />
               </div>
@@ -49,13 +49,13 @@ export const ProfilePage = () => {
               <div>
                 <h2 className="text-2xl font-extrabold text-stone-900 dark:text-stone-100 flex items-center justify-center md:justify-start space-x-2">
                   <span>{user.name}</span>
-                  {user.isPremium && (
+                  {user?.isPremium && (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#FFFBEB] text-[#B45309] border border-[#FCD34D]">
                       Premium ⭐
                     </span>
                   )}
                 </h2>
-                <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">{user.email}</p>
+                <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">{user?.email}</p>
               </div>
 
               {/* Stats Counters */}

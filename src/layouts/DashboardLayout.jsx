@@ -95,7 +95,7 @@ export const DashboardLayout = () => {
     { label: "Admin Profile", path: "/dashboard/admin/profile", icon: FileText },
   ];
 
-  const currentLinks = user.role === "admin" ? adminLinks : userLinks;
+  const currentLinks = user?.role === "admin" ? adminLinks : userLinks;
 
   const getPageTitle = () => {
     const current = currentLinks.find((l) => l.path === location.pathname);
@@ -130,7 +130,7 @@ export const DashboardLayout = () => {
         {/* Sidebar Nav Items */}
         <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
           <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-stone-400 mb-2">
-            {user.role === "admin" ? "Management Panel" : "Member Workspace"}
+            {user?.role === "admin" ? "Management Panel" : "Member Workspace"}
           </p>
 
           {currentLinks.map((link) => {
@@ -185,10 +185,10 @@ export const DashboardLayout = () => {
             <UserAvatar user={user} className="w-10 h-10 flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-stone-900 dark:text-stone-100 truncate">
-                {user.name || "User"}
+                {user?.name || "User"}
               </p>
               <div className="flex items-center space-x-1.5 mt-0.5">
-                {user.isPremium ? (
+                {user?.isPremium ? (
                   <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
                     <Star className="w-2.5 h-2.5 fill-amber-500 mr-0.5" /> Premium
                   </span>
@@ -197,7 +197,7 @@ export const DashboardLayout = () => {
                     Free Plan
                   </span>
                 )}
-                {user.role === "admin" && (
+                {user?.role === "admin" && (
                   <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-300">
                     Admin 🛡️
                   </span>

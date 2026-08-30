@@ -15,11 +15,11 @@ const UserAvatar = ({ user, className = "w-9 h-9" }) => {
   const isPremium = user?.isPremium && !isAdmin;
 
   const getInitial = () => {
-    if (user?.name && user.name.trim()) {
-      return user.name.trim().charAt(0).toUpperCase();
+    if (user?.name && user?.name.trim()) {
+      return user?.name.trim().charAt(0).toUpperCase();
     }
-    if (user?.email && user.email.trim()) {
-      return user.email.trim().charAt(0).toUpperCase();
+    if (user?.email && user?.email.trim()) {
+      return user?.email.trim().charAt(0).toUpperCase();
     }
     return "U";
   };
@@ -37,7 +37,7 @@ const UserAvatar = ({ user, className = "w-9 h-9" }) => {
       {user?.photo && !imgError ? (
         <img
           src={user.photo}
-          alt={user.name || "User Profile"}
+          alt={user?.name || "User Profile"}
           referrerPolicy="no-referrer"
           onError={() => setImgError(true)}
           className={`${className} rounded-full object-cover ${glowClasses}`}
@@ -176,12 +176,12 @@ export const Navbar = () => {
           })}
 
           {/* Member Status Badge: Admin 🛡️ or Premium ⭐ */}
-          {user.isLoggedIn && user.role === "admin" ? (
+          {user?.isLoggedIn && user?.role === "admin" ? (
             <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/50 shadow-2xs">
               <ShieldCheck className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
               <span>Admin 🛡️</span>
             </span>
-          ) : user.isLoggedIn && user.isPremium ? (
+          ) : user?.isLoggedIn && user?.isPremium ? (
             <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-bold bg-[#FFFBEB] dark:bg-[#F59E0B]/20 text-[#B45309] dark:text-[#FBBF24] border border-[#FCD34D] dark:border-[#F59E0B]/40 shadow-2xs">
               <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
               <span>Premium ⭐</span>
@@ -214,16 +214,16 @@ export const Navbar = () => {
           </button>
 
           {/* User Auth Controls */}
-          {user.isLoggedIn ? (
+          {user?.isLoggedIn ? (
             <div className="relative flex items-center space-x-2.5" ref={dropdownRef}>
               
               {/* Dedicated Dashboard Button */}
               <Link
-                to={user.role === "admin" ? "/dashboard/admin" : "/dashboard"}
+                to={user?.role === "admin" ? "/dashboard/admin" : "/dashboard"}
                 className="hidden sm:inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[#ECFDF5] dark:bg-[#059669]/15 text-[#059669] dark:text-[#34D399] border border-emerald-500/20 font-bold text-xs hover:bg-[#059669] hover:text-white transition shadow-2xs cursor-pointer"
               >
-                {user.role === "admin" ? <ShieldCheck className="w-3.5 h-3.5" /> : <LayoutDashboard className="w-3.5 h-3.5" />}
-                <span>{user.role === "admin" ? "Admin Panel" : "Dashboard"}</span>
+                {user?.role === "admin" ? <ShieldCheck className="w-3.5 h-3.5" /> : <LayoutDashboard className="w-3.5 h-3.5" />}
+                <span>{user?.role === "admin" ? "Admin Panel" : "Dashboard"}</span>
               </Link>
 
               {/* Avatar Dropdown Trigger */}
@@ -244,25 +244,25 @@ export const Navbar = () => {
                     <UserAvatar user={user} className="w-8 h-8 flex-shrink-0" />
                     <div className="overflow-hidden">
                       <div className="flex items-center space-x-1.5">
-                        <p className="font-bold text-xs text-stone-900 dark:text-stone-100 truncate">{user.name || "User"}</p>
-                        {user.role === "admin" && (
+                        <p className="font-bold text-xs text-stone-900 dark:text-stone-100 truncate">{user?.name || "User"}</p>
+                        {user?.role === "admin" && (
                           <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
                             Admin
                           </span>
                         )}
-                        {user.isPremium && user.role !== "admin" && (
+                        {user?.isPremium && user.role !== "admin" && (
                           <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
                             ⭐
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-stone-400 truncate">{user.email}</p>
+                      <p className="text-[11px] text-stone-400 truncate">{user?.email}</p>
                     </div>
                   </div>
 
                   {/* Profile Link */}
                   <Link
-                    to={user.role === "admin" ? "/dashboard/admin/profile" : "/dashboard/profile"}
+                    to={user?.role === "admin" ? "/dashboard/admin/profile" : "/dashboard/profile"}
                     className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 font-medium text-xs transition"
                   >
                     <User className="w-4 h-4 text-[#059669]" />
@@ -339,12 +339,12 @@ export const Navbar = () => {
                   </Link>
                 ))}
 
-                {user.isLoggedIn && (
+                {user?.isLoggedIn && (
                   <Link
-                    to={user.role === "admin" ? "/dashboard/admin" : "/dashboard"}
+                    to={user?.role === "admin" ? "/dashboard/admin" : "/dashboard"}
                     className="block text-base font-bold text-[#059669]"
                   >
-                    {user.role === "admin" ? "Admin Panel" : "Dashboard"}
+                    {user?.role === "admin" ? "Admin Panel" : "Dashboard"}
                   </Link>
                 )}
               </div>
@@ -352,13 +352,13 @@ export const Navbar = () => {
 
             {/* Mobile Footer Auth Actions */}
             <div className="pt-6 border-t border-stone-200 dark:border-stone-800">
-              {user.isLoggedIn ? (
+              {user?.isLoggedIn ? (
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <UserAvatar user={user} className="w-10 h-10 flex-shrink-0" />
                     <div className="overflow-hidden">
-                      <p className="font-bold text-sm text-stone-900 dark:text-stone-100 truncate">{user.name || "User"}</p>
-                      <p className="text-xs text-stone-500 truncate">{user.email}</p>
+                      <p className="font-bold text-sm text-stone-900 dark:text-stone-100 truncate">{user?.name || "User"}</p>
+                      <p className="text-xs text-stone-500 truncate">{user?.email}</p>
                     </div>
                   </div>
                   <button
