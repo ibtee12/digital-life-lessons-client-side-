@@ -454,7 +454,15 @@ export const AuthProvider = ({ children }) => {
 
         const isAdminUser = checkIsAdmin(fbUser.email || userData.email);
         const resolvedRole = isAdminUser ? "admin" : (userData.role || "user");
-        const resolvedPremium = isAdminUser ? true : (userData.isPremium || false);
+        let resolvedPremium = isAdminUser ? true : (userData.isPremium || false);
+
+        // Also check localStorage if premium was purchased recently
+        try {
+          const cached = JSON.parse(localStorage.getItem("dll_user"));
+          if (cached && (cached.id === fbUser.uid || cached.email === fbUser.email) && cached.isPremium) {
+            resolvedPremium = true;
+          }
+        } catch (e) {}
 
         setUser(prev => {
           const updated = {
@@ -464,7 +472,7 @@ export const AuthProvider = ({ children }) => {
             email: userData.email || prev.email,
             photo: userData.photo || prev.photo,
             role: resolvedRole,
-            isPremium: resolvedPremium,
+            isPremium: resolvedPremium || prev.isPremium,
             isLoggedIn: true
           };
           try {
@@ -472,8 +480,28 @@ export const AuthProvider = ({ children }) => {
           } catch (e) {}
           return updated;
         });
+
+        // Sync with MongoDB Atlas in the background
+        try {
+          const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+          await fetch(`${apiUrl}/auth/sync-user`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              uid: fbUser.uid,
+              email: fbUser.email,
+              name: userData.name || fbUser.displayName || fbUser.email?.split("@")[0],
+              photo: userData.photo || fbUser.photoURL || "",
+              role: resolvedRole,
+              isPremium: resolvedPremium
+            })
+          });
+        } catch (apiErr) {
+          console.warn("MongoDB Atlas background sync:", apiErr.message);
+        }
+
       } catch (err) {
-        console.warn("Firestore sync skipped or timed out:", err.message);
+        console.warn("Database sync skipped or timed out:", err.message);
       }
     })();
   };
@@ -482,13 +510,21 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
       if (fbUser) {
         const isAdmin = checkIsAdmin(fbUser.email);
+        let cachedPremium = false;
+        try {
+          const cached = JSON.parse(localStorage.getItem("dll_user"));
+          if (cached && (cached.id === fbUser.uid || cached.email === fbUser.email)) {
+            cachedPremium = !!cached.isPremium;
+          }
+        } catch (e) {}
+
         const authUser = {
           id: fbUser.uid,
           name: fbUser.displayName || fbUser.email?.split("@")[0] || "User",
           email: fbUser.email || "",
           photo: fbUser.photoURL || "",
           role: isAdmin ? "admin" : "user",
-          isPremium: isAdmin ? true : false,
+          isPremium: isAdmin ? true : cachedPremium,
           isLoggedIn: true
         };
         try {
@@ -496,7 +532,7 @@ export const AuthProvider = ({ children }) => {
         } catch (e) {}
         setUser(authUser);
 
-        // 2. Sync profile details from Firestore in the background
+        // 2. Sync profile details from Firestore and MongoDB in the background
         syncUserDocInBackground(fbUser);
       } else {
         setUser({
@@ -691,15 +727,45 @@ export const AuthProvider = ({ children }) => {
   };
 
   const upgradeToPremium = async () => {
-    setUser(prev => ({ ...prev, isPremium: true }));
-    if (user.id && user.id !== "user-current") {
+    const updatedUser = { ...user, isPremium: true };
+    setUser(updatedUser);
+
+    try {
+      localStorage.setItem("dll_user", JSON.stringify(updatedUser));
+    } catch (e) {}
+
+    // 1. Update Firestore
+    if (user?.id) {
       try {
-        await setDoc(doc(db, "users", user.id), { isPremium: true }, { merge: true });
+        await setDoc(doc(db, "users", user.id), { 
+          isPremium: true,
+          premiumPurchasedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
       } catch (err) {
-        console.error("Failed to update premium in Firestore:", err);
+        console.warn("Firestore premium update:", err.message);
       }
     }
-    showToast("🎉 Upgrade Successful! You are now a Premium Member.", "success");
+
+    // 2. Update MongoDB Atlas database
+    if (user?.email) {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        await fetch(`${apiUrl}/auth/upgrade-premium`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: user.email,
+            name: user.name,
+            photo: user.photo
+          })
+        });
+      } catch (err) {
+        console.warn("MongoDB Atlas premium sync:", err.message);
+      }
+    }
+
+    showToast("🎉 Upgrade Successful! You are now a Lifetime VIP Member.", "success");
   };
 
   const toggleLike = (lessonId) => {
