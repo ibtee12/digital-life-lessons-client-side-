@@ -27,9 +27,11 @@ export const LoginPage = () => {
 
     setIsSubmitting(true);
     try {
-      await loginWithEmail(email, password);
-      const isAdmin = email.toLowerCase().includes("admin") || email.toLowerCase().includes("nahyan") || email.toLowerCase().includes("ibtee");
-      navigate(isAdmin ? "/dashboard/admin" : "/dashboard");
+      const loggedIn = await loginWithEmail(email, password);
+      const isAdmin = (email.toLowerCase().includes("admin") || email.toLowerCase().includes("nahyan") || email.toLowerCase().includes("ibtee"));
+      setTimeout(() => {
+        navigate(isAdmin ? "/dashboard/admin" : "/dashboard");
+      }, 100);
     } catch (err) {
       // Error handled in AuthContext toast
     } finally {
@@ -42,7 +44,9 @@ export const LoginPage = () => {
     try {
       const res = await loginWithGoogle();
       const isAdmin = res?.email && (res.email.toLowerCase().includes("admin") || res.email.toLowerCase().includes("nahyan") || res.email.toLowerCase().includes("ibtee"));
-      navigate(isAdmin ? "/dashboard/admin" : "/dashboard");
+      setTimeout(() => {
+        navigate(isAdmin ? "/dashboard/admin" : "/dashboard");
+      }, 150);
     } catch (err) {
       // Error handled in AuthContext toast
     } finally {

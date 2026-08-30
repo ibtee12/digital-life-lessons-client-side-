@@ -99,7 +99,7 @@ export const RegisterPage = () => {
     try {
       const res = await loginWithGoogle();
       const isAdmin = res?.email && (res.email.toLowerCase().includes("admin") || res.email.toLowerCase().includes("nahyan") || res.email.toLowerCase().includes("ibtee"));
-      navigate(isAdmin ? "/dashboard/admin" : "/dashboard");
+      setTimeout(() => { navigate(isAdmin ? "/dashboard/admin" : "/dashboard"); }, 150);
     } catch (err) {
       console.error("Google Auth error:", err);
     } finally {
