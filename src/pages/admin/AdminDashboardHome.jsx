@@ -83,9 +83,9 @@ export const AdminDashboardHome = () => {
   const { lessons, reports, allUsers } = useAuth();
 
   const totalUsersCount = allUsers?.length || 6;
-  const totalPublicLessons = lessons.filter((l) => l.visibility === 'Public').length;
-  const totalPremiumLessons = lessons.filter((l) => l.accessLevel === 'Premium').length;
-  const totalReported = reports.length;
+  const totalPublicLessons = (lessons || []).filter((l) => l.visibility === 'Public').length;
+  const totalPremiumLessons = (lessons || []).filter((l) => l.accessLevel === 'Premium').length;
+  const totalReported = (reports || []).length;
 
   // Chart 1 States: Content Analytics (Days / Months) & Offset Pagination
   const [lessonTimeframe, setLessonTimeframe] = useState('days'); // 'days' | 'months'

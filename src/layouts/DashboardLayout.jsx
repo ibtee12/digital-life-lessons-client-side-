@@ -10,6 +10,8 @@ import { NotificationDrawer } from "../components/NotificationDrawer";
 
 const UserAvatar = ({ user, className = "w-10 h-10" }) => {
   const [imgError, setImgError] = useState(false);
+  const isAdmin = user?.role === "admin";
+  const isPremium = user?.isPremium && !isAdmin;
 
   const getInitial = () => {
     if (user?.name && user.name.trim()) {
@@ -21,21 +23,44 @@ const UserAvatar = ({ user, className = "w-10 h-10" }) => {
     return "U";
   };
 
-  if (user?.photo && !imgError) {
-    return (
-      <img
-        src={user.photo}
-        alt={user.name || "User Profile"}
-        referrerPolicy="no-referrer"
-        onError={() => setImgError(true)}
-        className={`${className} rounded-full object-cover ring-2 ring-stone-200 dark:ring-stone-700 shadow-2xs`}
-      />
-    );
+  let glowClasses = "ring-2 ring-stone-200 dark:ring-stone-700 shadow-2xs";
+  if (isAdmin) {
+    glowClasses = "ring-2 ring-rose-500/70 shadow-[0_0_14px_rgba(244,63,94,0.45)] dark:shadow-[0_0_18px_rgba(244,63,94,0.55)]";
+  } else if (isPremium) {
+    glowClasses = "ring-2 ring-[#F59E0B] shadow-[0_0_16px_rgba(245,158,11,0.55)] dark:shadow-[0_0_22px_rgba(245,158,11,0.7)]";
   }
 
   return (
-    <div className={`${className} rounded-full bg-gradient-to-tr from-[#059669] to-[#0D9488] text-white flex items-center justify-center font-extrabold text-sm ring-2 ring-stone-200 dark:ring-stone-700 shadow-2xs select-none`}>
-      {getInitial()}
+    <div className="relative inline-block flex-shrink-0">
+      {user?.photo && !imgError ? (
+        <img
+          src={user.photo}
+          alt={user.name || "User Profile"}
+          referrerPolicy="no-referrer"
+          onError={() => setImgError(true)}
+          className={`${className} rounded-full object-cover ${glowClasses}`}
+        />
+      ) : (
+        <div className={`${className} rounded-full ${isAdmin ? 'bg-gradient-to-tr from-rose-600 to-red-500' : 'bg-gradient-to-tr from-[#059669] to-[#0D9488]'} text-white flex items-center justify-center font-extrabold text-sm select-none ${glowClasses}`}>
+          {getInitial()}
+        </div>
+      )}
+
+      {isAdmin ? (
+        <span 
+          className="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-gradient-to-tr from-rose-600 via-rose-500 to-red-400 text-white flex items-center justify-center text-[9px] font-black shadow-md border-2 border-white dark:border-[#1C1917]"
+          title="Platform Administrator 🛡️"
+        >
+          🛡️
+        </span>
+      ) : isPremium ? (
+        <span 
+          className="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 text-stone-900 flex items-center justify-center text-[9px] font-black shadow-md border-2 border-white dark:border-[#1C1917]"
+          title="Premium VIP Member ⭐"
+        >
+          ⭐
+        </span>
+      ) : null}
     </div>
   );
 };

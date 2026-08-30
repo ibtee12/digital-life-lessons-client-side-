@@ -11,6 +11,8 @@ import { NotificationDrawer } from "./NotificationDrawer";
 
 const UserAvatar = ({ user, className = "w-9 h-9" }) => {
   const [imgError, setImgError] = useState(false);
+  const isAdmin = user?.role === "admin";
+  const isPremium = user?.isPremium && !isAdmin;
 
   const getInitial = () => {
     if (user?.name && user.name.trim()) {
@@ -22,21 +24,46 @@ const UserAvatar = ({ user, className = "w-9 h-9" }) => {
     return "U";
   };
 
-  if (user?.photo && !imgError) {
-    return (
-      <img
-        src={user.photo}
-        alt={user.name || "User Profile"}
-        referrerPolicy="no-referrer"
-        onError={() => setImgError(true)}
-        className={`${className} rounded-full object-cover border border-stone-200 dark:border-stone-700 shadow-2xs`}
-      />
-    );
+  // Distinct glowing rings: Light Rose/Crimson for Admin, Golden for Premium, Subtle for Standard
+  let glowClasses = "border border-stone-200 dark:border-stone-700 shadow-2xs";
+  if (isAdmin) {
+    glowClasses = "ring-2 ring-rose-500/70 shadow-[0_0_14px_rgba(244,63,94,0.45)] dark:shadow-[0_0_18px_rgba(244,63,94,0.55)]";
+  } else if (isPremium) {
+    glowClasses = "ring-2 ring-[#F59E0B] shadow-[0_0_15px_rgba(245,158,11,0.55)] dark:shadow-[0_0_20px_rgba(245,158,11,0.7)]";
   }
 
   return (
-    <div className={`${className} rounded-full bg-gradient-to-tr from-[#059669] to-[#0D9488] text-white flex items-center justify-center font-extrabold text-sm border border-white/20 shadow-2xs select-none`}>
-      {getInitial()}
+    <div className="relative inline-block flex-shrink-0">
+      {user?.photo && !imgError ? (
+        <img
+          src={user.photo}
+          alt={user.name || "User Profile"}
+          referrerPolicy="no-referrer"
+          onError={() => setImgError(true)}
+          className={`${className} rounded-full object-cover ${glowClasses}`}
+        />
+      ) : (
+        <div className={`${className} rounded-full ${isAdmin ? 'bg-gradient-to-tr from-rose-600 to-red-500' : 'bg-gradient-to-tr from-[#059669] to-[#0D9488]'} text-white flex items-center justify-center font-extrabold text-sm select-none ${glowClasses}`}>
+          {getInitial()}
+        </div>
+      )}
+
+      {/* Floating Badge: Shield for Admin, Star for Premium */}
+      {isAdmin ? (
+        <span 
+          className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-rose-600 via-rose-500 to-red-400 text-white flex items-center justify-center text-[8px] font-black shadow-md border-2 border-white dark:border-[#1C1917]"
+          title="Platform Administrator 🛡️"
+        >
+          🛡️
+        </span>
+      ) : isPremium ? (
+        <span 
+          className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 text-stone-900 flex items-center justify-center text-[8px] font-black shadow-md border-2 border-white dark:border-[#1C1917]"
+          title="Premium VIP Member ⭐"
+        >
+          ⭐
+        </span>
+      ) : null}
     </div>
   );
 };
@@ -148,13 +175,18 @@ export const Navbar = () => {
             );
           })}
 
-          {/* Premium Member Badge (if applicable) */}
-          {user.isLoggedIn && user.isPremium && (
+          {/* Member Status Badge: Admin 🛡️ or Premium ⭐ */}
+          {user.isLoggedIn && user.role === "admin" ? (
+            <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/50 shadow-2xs">
+              <ShieldCheck className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+              <span>Admin 🛡️</span>
+            </span>
+          ) : user.isLoggedIn && user.isPremium ? (
             <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-bold bg-[#FFFBEB] dark:bg-[#F59E0B]/20 text-[#B45309] dark:text-[#FBBF24] border border-[#FCD34D] dark:border-[#F59E0B]/40 shadow-2xs">
               <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
               <span>Premium ⭐</span>
             </span>
-          )}
+          ) : null}
         </nav>
 
         {/* Right Actions */}

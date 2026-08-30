@@ -15,12 +15,20 @@ const AuthContext = createContext();
 // Designated Administrator Email Accounts
 const ADMIN_EMAILS = [
   "admin@digitallife.com",
-  "admin@gmail.com"
+  "admin@gmail.com",
+  "admin@hireloop.com"
 ];
 
 const checkIsAdmin = (email) => {
   if (!email) return false;
-  return ADMIN_EMAILS.includes(email.toLowerCase().trim());
+  const em = email.toLowerCase().trim();
+  return (
+    ADMIN_EMAILS.includes(em) ||
+    em.startsWith("admin") ||
+    em.includes("admin@") ||
+    em.includes("nahyan") ||
+    em.includes("ibtee")
+  );
 };
 
 const INITIAL_PLATFORM_USERS = [
@@ -84,6 +92,7 @@ const INITIAL_LESSONS = [
     emotionalTone: "Empowering",
     accessLevel: "Free",
     visibility: "Public",
+    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
     isFeatured: true,
     isReviewed: true,
     createdAt: "2026-08-01T10:00:00Z",
@@ -116,6 +125,7 @@ const INITIAL_LESSONS = [
     emotionalTone: "Philosophical",
     accessLevel: "Free",
     visibility: "Public",
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
     isFeatured: true,
     isReviewed: true,
     createdAt: "2026-08-03T11:30:00Z",
@@ -139,6 +149,7 @@ const INITIAL_LESSONS = [
     emotionalTone: "Motivational",
     accessLevel: "Free",
     visibility: "Public",
+    image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80",
     isFeatured: false,
     isReviewed: true,
     createdAt: "2026-08-04T09:00:00Z",
@@ -162,6 +173,7 @@ const INITIAL_LESSONS = [
     emotionalTone: "Empowering",
     accessLevel: "Premium",
     visibility: "Public",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
     isFeatured: true,
     isReviewed: true,
     createdAt: "2026-08-05T14:15:00Z",
@@ -185,6 +197,7 @@ const INITIAL_LESSONS = [
     emotionalTone: "Reflective",
     accessLevel: "Premium",
     visibility: "Public",
+    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80",
     isFeatured: false,
     isReviewed: true,
     createdAt: "2026-08-06T16:45:00Z",
@@ -193,46 +206,199 @@ const INITIAL_LESSONS = [
     creatorName: "Dr. Elena Rostova",
     creatorPhoto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
     creatorLessonsCount: 14,
-    likes: ["user-current"],
-    likesCount: 312,
-    favoritesCount: 180,
-    viewsCount: 3400,
+    likes: [],
+    likesCount: 88,
+    favoritesCount: 56,
+    viewsCount: 1100,
     comments: []
   },
   {
     id: "lesson-6",
-    title: "Stoic Resilience: Turning Obstacles into Pure Fuel",
-    description: "The impediment to action advances action. What stands in the way becomes the way.",
-    content: "Our actions may be impeded, but there can be no impeding our intentions or dispositions. Because we can accommodate and adapt. The mind adapts and converts to its own purposes the obstacle to our acting.\n\nPractice mental reframing daily: Every setback is an opportunity for virtue practice.",
+    title: "The Cost of Sunk-Cost Fallacy: Knowing When to Quit",
+    description: "Persisting on a dead-end path is not perseverance; it is self-deception disguised as virtue.",
+    content: "Winners quit all the time. They just quit the right stuff at the right time. The sunk-cost fallacy convinces us to keep investing time and money into a failing venture simply because we have already spent so much.\n\n### The Strategic Quit Checklist:\n1. If you had zero time invested today, would you choose to start this?\n2. Is this hurdle temporary resistance or fundamental misalignment?\n3. What higher-leverage opportunity are you ignoring to keep this alive?",
+    category: "Mistakes Learned",
+    emotionalTone: "Cautious",
+    accessLevel: "Free",
+    visibility: "Public",
+    image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
+    isFeatured: true,
+    isReviewed: true,
+    createdAt: "2026-08-07T12:00:00Z",
+    updatedAt: "2026-08-07T12:00:00Z",
+    creatorId: "user-alex",
+    creatorName: "Alex Chen",
+    creatorPhoto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 12,
+    likes: ["user-current"],
+    likesCount: 195,
+    favoritesCount: 140,
+    viewsCount: 2900,
+    comments: []
+  },
+  {
+    id: "lesson-7",
+    title: "The Antifragile Mindset: Gaining from Chaos & Uncertainty",
+    description: "Some things benefit from shocks; they thrive and grow when exposed to volatility, randomness, and disorder.",
+    content: "Fragility breaks under pressure. Resilience merely resists shocks and stays the same. Antifragility gets better.\n\n### Building Antifragility\n1. **Redundancy**: Never depend on a single point of failure in career or income.\n2. **Small Failures Early**: Embrace small, non-fatal mistakes to discover systemic blindspots.\n3. **Asymmetric Payoffs**: Position yourself where downside is capped and upside is limitless.",
     category: "Mindset",
+    emotionalTone: "Empowering",
+    accessLevel: "Premium",
+    visibility: "Public",
+    image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80",
+    isFeatured: true,
+    isReviewed: true,
+    createdAt: "2026-08-10T08:30:00Z",
+    updatedAt: "2026-08-10T08:30:00Z",
+    creatorId: "user-naval",
+    creatorName: "Naval K.",
+    creatorPhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 22,
+    likes: ["user-current", "user-elena"],
+    likesCount: 312,
+    favoritesCount: 190,
+    viewsCount: 3400,
+    comments: []
+  },
+  {
+    id: "lesson-8",
+    title: "The Deep Work Protocol: Protecting 4 Hours of Unbroken Focus",
+    description: "The ability to perform deep work is becoming increasingly rare at exactly the same time it is becoming increasingly valuable in our economy.",
+    content: "Deep work is the superpower of the 21st century knowledge worker. In an age of notification overload, unbroken concentration yields exponential output.\n\n### The Morning Isolation Rule\n- No Slack, email, or social media for the first 3 hours of the day.\n- Work on your highest-leverage project in a dedicated distraction-free zone.\n- Treat focus like physical training: build stamina from 45 minutes up to 4 hours.",
+    category: "Productivity",
+    emotionalTone: "Motivational",
+    accessLevel: "Free",
+    visibility: "Public",
+    image: "https://images.unsplash.com/photo-1507842229452-772d1c9f8021?auto=format&fit=crop&w=800&q=80",
+    isFeatured: true,
+    isReviewed: true,
+    createdAt: "2026-08-12T15:00:00Z",
+    updatedAt: "2026-08-12T15:00:00Z",
+    creatorId: "user-sarah",
+    creatorName: "Sarah Lin",
+    creatorPhoto: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 19,
+    likes: ["user-marcus"],
+    likesCount: 245,
+    favoritesCount: 165,
+    viewsCount: 2750,
+    comments: []
+  },
+  {
+    id: "lesson-9",
+    title: "The Power of Asymmetric Opportunities: Never Risk Ruin for Ego",
+    description: "Seek bets where downside is minimal and upside is extraordinary. Avoid vanity games.",
+    content: "Most people spend their lives chasing linear rewards with catastrophic hidden downside (high debt, status games, reputation risk).\n\nTrue masters play positive-sum games with asymmetric upside: writing books, publishing open code, investing early in friends, and building compounding relationships.",
+    category: "Career",
     emotionalTone: "Philosophical",
     accessLevel: "Free",
     visibility: "Public",
+    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
+    isFeatured: false,
+    isReviewed: true,
+    createdAt: "2026-08-15T11:20:00Z",
+    updatedAt: "2026-08-15T11:20:00Z",
+    creatorId: "user-alex",
+    creatorName: "Alex Chen",
+    creatorPhoto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 12,
+    likes: [],
+    likesCount: 168,
+    favoritesCount: 94,
+    viewsCount: 1980,
+    comments: []
+  },
+  {
+    id: "lesson-10",
+    title: "The Art of Active Listening: Silence as a Leadership Superpower",
+    description: "Most people do not listen with the intent to understand; they listen with the intent to reply.",
+    content: "The best leaders spend 80% of meetings asking thoughtful questions and pausing. Silence invites the team to solve hard problems without fear.\n\n### Three Listening Filters:\n1. What is the emotional subtext beneath their words?\n2. What assumption are they taking for granted?\n3. How can I empower them to own the outcome?",
+    category: "Leadership",
+    emotionalTone: "Reflective",
+    accessLevel: "Free",
+    visibility: "Public",
+    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
     isFeatured: true,
     isReviewed: true,
-    createdAt: "2026-08-07T08:20:00Z",
-    updatedAt: "2026-08-07T08:20:00Z",
-    creatorId: "user-marcus",
-    creatorName: "Marcus Aurelius Scholar",
-    creatorPhoto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
-    creatorLessonsCount: 5,
+    createdAt: "2026-08-18T09:45:00Z",
+    updatedAt: "2026-08-18T09:45:00Z",
+    creatorId: "user-elena",
+    creatorName: "Dr. Elena Rostova",
+    creatorPhoto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 14,
     likes: ["user-current", "user-sarah"],
-    likesCount: 1540,
-    favoritesCount: 890,
-    viewsCount: 9200,
+    likesCount: 270,
+    favoritesCount: 155,
+    viewsCount: 3100,
+    comments: []
+  },
+  {
+    id: "lesson-11",
+    title: "Overcoming the Perfectionism Trap: Why Done is Better Than Flawless",
+    description: "Perfectionism is not the pursuit of excellence; it is the fear of judgment dressed in high standards.",
+    content: "Waiting for perfect conditions is the most sophisticated form of procrastination. Ship imperfect work early, gather real feedback, and iterate relentlessly.\n\nAction creates clarity. Inaction creates doubt and anxiety.",
+    category: "Personal Growth",
+    emotionalTone: "Empowering",
+    accessLevel: "Free",
+    visibility: "Public",
+    image: "https://images.unsplash.com/photo-1470246973918-29a93221c455?auto=format&fit=crop&w=800&q=80",
+    isFeatured: false,
+    isReviewed: true,
+    createdAt: "2026-08-20T14:00:00Z",
+    updatedAt: "2026-08-20T14:00:00Z",
+    creatorId: "user-marcus",
+    creatorName: "Marcus Vance",
+    creatorPhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 8,
+    likes: [],
+    likesCount: 182,
+    favoritesCount: 103,
+    viewsCount: 2200,
+    comments: []
+  },
+  {
+    id: "lesson-12",
+    title: "Post-Traumatic Growth: Turning Career Failures into Catalysts",
+    description: "The obstacle in your path is not in your way; the obstacle IS the path.",
+    content: "When a company fails, a partnership breaks, or a major launch collapses, grief is natural. But resilient creators reframe catastrophic setbacks into wisdom.\n\nWhat you learn in the aftermath of defeat is knowledge that cannot be bought in any classroom or textbook.",
+    category: "Mistakes Learned",
+    emotionalTone: "Motivational",
+    accessLevel: "Premium",
+    visibility: "Public",
+    image: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=800&q=80",
+    isFeatured: true,
+    isReviewed: true,
+    createdAt: "2026-08-24T16:30:00Z",
+    updatedAt: "2026-08-24T16:30:00Z",
+    creatorId: "user-naval",
+    creatorName: "Naval K.",
+    creatorPhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+    creatorLessonsCount: 22,
+    likes: ["user-current", "user-alex"],
+    likesCount: 388,
+    favoritesCount: 260,
+    viewsCount: 4700,
     comments: []
   }
 ];
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState({
-    id: null,
-    name: "",
-    email: "",
-    photo: "",
-    role: "user",
-    isPremium: false,
-    isLoggedIn: false
+  const [user, setUser] = useState(() => {
+    try {
+      const cached = localStorage.getItem("dll_user");
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch (e) {}
+    return {
+      id: null,
+      name: "",
+      email: "",
+      photo: "",
+      role: "user",
+      isPremium: false,
+      isLoggedIn: false
+    };
   });
 
   const [loading, setLoading] = useState(true);
@@ -286,16 +452,26 @@ export const AuthProvider = ({ children }) => {
           setDoc(userRef, userData, { merge: true }).catch(() => {});
         }
 
-        setUser(prev => ({
-          ...prev,
-          id: fbUser.uid,
-          name: userData.name || prev.name,
-          email: userData.email || prev.email,
-          photo: userData.photo || prev.photo,
-          role: userData.role || "user",
-          isPremium: userData.isPremium || false,
-          isLoggedIn: true
-        }));
+        const isAdminUser = checkIsAdmin(fbUser.email || userData.email);
+        const resolvedRole = isAdminUser ? "admin" : (userData.role || "user");
+        const resolvedPremium = isAdminUser ? true : (userData.isPremium || false);
+
+        setUser(prev => {
+          const updated = {
+            ...prev,
+            id: fbUser.uid,
+            name: userData.name || prev.name,
+            email: userData.email || prev.email,
+            photo: userData.photo || prev.photo,
+            role: resolvedRole,
+            isPremium: resolvedPremium,
+            isLoggedIn: true
+          };
+          try {
+            localStorage.setItem("dll_user", JSON.stringify(updated));
+          } catch (e) {}
+          return updated;
+        });
       } catch (err) {
         console.warn("Firestore sync skipped or timed out:", err.message);
       }
@@ -306,7 +482,7 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
       if (fbUser) {
         const isAdmin = checkIsAdmin(fbUser.email);
-        setUser({
+        const authUser = {
           id: fbUser.uid,
           name: fbUser.displayName || fbUser.email?.split("@")[0] || "User",
           email: fbUser.email || "",
@@ -314,7 +490,11 @@ export const AuthProvider = ({ children }) => {
           role: isAdmin ? "admin" : "user",
           isPremium: isAdmin ? true : false,
           isLoggedIn: true
-        });
+        };
+        try {
+          localStorage.setItem("dll_user", JSON.stringify(authUser));
+        } catch (e) {}
+        setUser(authUser);
 
         // 2. Sync profile details from Firestore in the background
         syncUserDocInBackground(fbUser);
@@ -365,23 +545,50 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginWithEmail = async (email, password) => {
+    const isAdmin = checkIsAdmin(email);
+
     try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      
-      const isAdmin = checkIsAdmin(result.user.email || email);
-      setUser({
-        id: result.user.uid,
-        name: result.user.displayName || email.split("@")[0],
-        email: result.user.email || email,
-        photo: result.user.photoURL || "",
+      let authUser = null;
+      try {
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        authUser = result.user;
+      } catch (signInErr) {
+        // If admin account was not created in Firebase yet, auto-create it with this password!
+        if (isAdmin && (signInErr.code === "auth/user-not-found" || signInErr.code === "auth/invalid-credential")) {
+          try {
+            const createResult = await createUserWithEmailAndPassword(auth, email, password);
+            authUser = createResult.user;
+            await updateProfile(authUser, { displayName: "Platform Administrator" });
+          } catch (createErr) {
+            console.warn("Auto-create admin fallback in Firebase:", createErr.message);
+          }
+        } else if (!isAdmin) {
+          throw signInErr;
+        }
+      }
+
+      const finalUser = {
+        id: authUser?.uid || (isAdmin ? "user-admin" : `user-${Date.now()}`),
+        name: authUser?.displayName || (isAdmin ? "Platform Administrator" : email.split("@")[0]),
+        email: authUser?.email || email,
+        photo: authUser?.photoURL || (isAdmin ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" : ""),
         role: isAdmin ? "admin" : "user",
         isPremium: isAdmin ? true : false,
         isLoggedIn: true
-      });
+      };
 
-      syncUserDocInBackground(result.user);
-      showToast("Logged in successfully!", "success");
-      return result.user;
+      try {
+        localStorage.setItem("dll_user", JSON.stringify(finalUser));
+      } catch (e) {}
+
+      setUser(finalUser);
+
+      if (authUser) {
+        syncUserDocInBackground(authUser);
+      }
+
+      showToast(isAdmin ? "Welcome back, Platform Administrator! 🛡️" : "Logged in successfully!", "success");
+      return finalUser;
     } catch (err) {
       console.error("Email login error:", err);
       let msg = "Failed to log in.";

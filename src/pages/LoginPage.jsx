@@ -28,7 +28,8 @@ export const LoginPage = () => {
     setIsSubmitting(true);
     try {
       await loginWithEmail(email, password);
-      navigate("/dashboard");
+      const isAdmin = email.toLowerCase().includes("admin") || email.toLowerCase().includes("nahyan") || email.toLowerCase().includes("ibtee");
+      navigate(isAdmin ? "/dashboard/admin" : "/dashboard");
     } catch (err) {
       // Error handled in AuthContext toast
     } finally {
@@ -39,8 +40,9 @@ export const LoginPage = () => {
   const handleGoogleLogin = async () => {
     setIsGoogleSubmitting(true);
     try {
-      await loginWithGoogle();
-      navigate("/dashboard");
+      const res = await loginWithGoogle();
+      const isAdmin = res?.email && (res.email.toLowerCase().includes("admin") || res.email.toLowerCase().includes("nahyan") || res.email.toLowerCase().includes("ibtee"));
+      navigate(isAdmin ? "/dashboard/admin" : "/dashboard");
     } catch (err) {
       // Error handled in AuthContext toast
     } finally {

@@ -6,17 +6,26 @@ import { CategoryBadge, EmotionalToneBadge, AccessBadge } from './Badge';
 import { HeartBurst } from './HeartBurst';
 import { useAuth } from '../context/AuthContext';
 
-const FALLBACK_IMAGES = [
-  'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1499209974431-9dac3ada00d7?auto=format&fit=crop&w=800&q=80'
-];
+const CATEGORY_IMAGES = {
+  'Personal Growth': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+  'Mindset': 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+  'Career': 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
+  'Leadership': 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80',
+  'Productivity': 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80',
+  'Mistakes Learned': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
+};
+
+const getLessonImage = (lesson) => {
+  if (lesson.image && lesson.image.trim() && !lesson.image.includes('1499750310107')) {
+    return lesson.image;
+  }
+  return CATEGORY_IMAGES[lesson.category] || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80';
+};
 
 export const LessonCard = ({ lesson }) => {
   const { user, toggleLike, toggleFavorite, favorites } = useAuth();
   const navigate = useNavigate();
-  const [imgSrc, setImgSrc] = useState(lesson.image || FALLBACK_IMAGES[0]);
+  const [imgSrc, setImgSrc] = useState(() => getLessonImage(lesson));
   const [imgFailed, setImgFailed] = useState(false);
 
   const isLocked = lesson.accessLevel === 'Premium' && (!user.isLoggedIn || !user.isPremium);
@@ -32,7 +41,7 @@ export const LessonCard = ({ lesson }) => {
   const handleImgError = () => {
     if (!imgFailed) {
       setImgFailed(true);
-      setImgSrc(FALLBACK_IMAGES[1]);
+      setImgSrc(CATEGORY_IMAGES[lesson.category] || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80');
     }
   };
 

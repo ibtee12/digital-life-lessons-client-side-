@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { 
   BookOpen, Bookmark, Heart, Eye, PlusCircle, ArrowRight, Flame, TrendingUp, Sparkles, FileText
 } from 'lucide-react';
