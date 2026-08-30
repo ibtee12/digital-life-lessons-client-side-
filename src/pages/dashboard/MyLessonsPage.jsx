@@ -9,7 +9,7 @@ export const MyLessonsPage = () => {
   const [deleteModalId, setDeleteModalId] = useState(null);
 
   // User's own lessons
-  const myLessons = lessons.filter((l) => l.creatorId === user.id || l.creatorName === user.name);
+  const myLessons = (lessons || []).filter((l) => (user?.id && l?.creatorId === user.id) || (user?.name && l?.creatorName && l.creatorName.toLowerCase() === user.name.toLowerCase()));
 
   const handleToggleVisibility = (lesson) => {
     const newVisibility = lesson.visibility === 'Public' ? 'Private' : 'Public';

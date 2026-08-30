@@ -520,18 +520,23 @@ export const AuthProvider = ({ children }) => {
       const result = await signInWithPopup(auth, googleProvider);
       
       const isAdmin = checkIsAdmin(result.user.email);
-      setUser({
+      const googleUser = {
         id: result.user.uid,
-        name: result.user.displayName || "User",
+        name: result.user.displayName || result.user.email?.split("@")[0] || "User",
         email: result.user.email || "",
         photo: result.user.photoURL || "",
         role: isAdmin ? "admin" : "user",
         isPremium: isAdmin ? true : false,
         isLoggedIn: true
-      });
+      };
 
+      try {
+        localStorage.setItem("dll_user", JSON.stringify(googleUser));
+      } catch (e) {}
+
+      setUser(googleUser);
       syncUserDocInBackground(result.user);
-      showToast(`Welcome back, ${result.user.displayName || "User"}!`, "success");
+      showToast(`Welcome, ${googleUser.name}!`, "success");
       return result.user;
     } catch (err) {
       console.error("Google sign in error:", err);

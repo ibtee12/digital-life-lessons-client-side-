@@ -10,7 +10,7 @@ export const MyFavoritesPage = () => {
 
   // Filter saved lessons
   const savedLessons = useMemo(() => {
-    return lessons.filter((l) => favorites.includes(l.id));
+    return (lessons || []).filter((l) => (favorites || []).includes(l?.id));
   }, [lessons, favorites]);
 
   const filteredSaved = useMemo(() => {

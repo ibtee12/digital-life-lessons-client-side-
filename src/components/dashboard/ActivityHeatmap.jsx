@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Flame, Calendar, Sparkles, BookOpen } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -6,8 +6,18 @@ export const ActivityHeatmap = () => {
   const { user, lessons } = useAuth();
   const [hoveredCell, setHoveredCell] = useState(null);
 
-  // User created lessons
-  const myLessons = lessons.filter((l) => l.creatorId === user.id || l.creatorName === user.name);
+  // User created lessons with null safety
+  const myLessons = useMemo(() => {
+    if (!lessons || !Array.isArray(lessons)) return [];
+    return lessons.filter((l) => {
+      if (!l) return false;
+      const matchId = user?.id && l.creatorId === user.id;
+      const matchName = user?.name && l.creatorName && l.creatorName.toLowerCase() === user.name.toLowerCase();
+      const matchEmail = user?.email && l.creatorEmail && l.creatorEmail.toLowerCase() === user.email.toLowerCase();
+      return matchId || matchName || matchEmail;
+    });
+  }, [lessons, user]);
+
   const totalInsights = myLessons.length;
   
   // Dynamic streak calculation: 0 if no lessons, otherwise 1 + number of lessons
@@ -15,26 +25,30 @@ export const ActivityHeatmap = () => {
 
   // Generate 20 weeks of heatmap calendar
   const now = new Date();
-  const weeks = Array.from({ length: 20 }, (_, weekIdx) => {
-    return Array.from({ length: 7 }, (_, dayIdx) => {
-      const dayOffset = (19 - weekIdx) * 7 + (6 - dayIdx);
-      const dateObj = new Date(now);
-      dateObj.setDate(now.getDate() - dayOffset);
-      const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const weeks = useMemo(() => {
+    return Array.from({ length: 20 }, (_, weekIdx) => {
+      return Array.from({ length: 7 }, (_, dayIdx) => {
+        const dayOffset = (19 - weekIdx) * 7 + (6 - dayIdx);
+        const dateObj = new Date(now);
+        dateObj.setDate(now.getDate() - dayOffset);
+        const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-      // Match actual lesson publication dates
-      const count = myLessons.filter(l => {
-        const lDate = new Date(l.createdAt || Date.now());
-        return lDate.toDateString() === dateObj.toDateString();
-      }).length;
+        // Match actual lesson publication dates
+        const count = myLessons.filter(l => {
+          if (!l) return false;
+          const lDate = new Date(l.createdAt || Date.now());
+          if (isNaN(lDate.getTime())) return false;
+          return lDate.toDateString() === dateObj.toDateString();
+        }).length;
 
-      return {
-        id: `w${weekIdx}-d${dayIdx}`,
-        count,
-        date: dateStr
-      };
+        return {
+          id: `w${weekIdx}-d${dayIdx}`,
+          count,
+          date: dateStr
+        };
+      });
     });
-  });
+  }, [myLessons]);
 
   const getIntensityClass = (count) => {
     if (count === 0) return 'bg-stone-100 dark:bg-stone-800/80 border-stone-200/50 dark:border-stone-700/50';

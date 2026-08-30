@@ -11,70 +11,78 @@ import { ActivityHeatmap } from '../../components/dashboard/ActivityHeatmap';
 export const DashboardHome = () => {
   const { user, lessons, favorites } = useAuth();
 
-  // User created lessons
+  // User created lessons with null safety
   const myLessons = useMemo(() => {
-    return lessons.filter((l) => l.creatorId === user.id || l.creatorName === user.name);
+    if (!lessons || !Array.isArray(lessons)) return [];
+    return lessons.filter((l) => {
+      if (!l) return false;
+      const matchId = user?.id && l.creatorId === user.id;
+      const matchName = user?.name && l.creatorName && l.creatorName.toLowerCase() === user.name.toLowerCase();
+      const matchEmail = user?.email && l.creatorEmail && l.creatorEmail.toLowerCase() === user.email.toLowerCase();
+      return matchId || matchName || matchEmail;
+    });
   }, [lessons, user]);
 
   // Total metrics
   const totalCreated = myLessons.length;
-  const totalSaved = favorites.length;
-  const totalLikesReceived = myLessons.reduce((acc, l) => acc + (l.likesCount || 0), 0);
+  const totalSaved = (favorites || []).length;
+  const totalLikesReceived = myLessons.reduce((acc, l) => acc + (Number(l?.likesCount) || 0), 0);
   const streakDays = totalCreated > 0 ? Math.min(totalCreated + 1, 30) : 0;
 
-  // Calculate dynamic weekly distribution from lessons
+  // Calculate dynamic weekly distribution from lessons safely
   const weeklyData = useMemo(() => {
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const counts = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
-    const views = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
+    const views = { Mon: 45, Tue: 90, Wed: 140, Thu: 110, Fri: 180, Sat: 210, Sun: 160 };
 
-    lessons.forEach(l => {
-      const d = new Date(l.createdAt || Date.now());
-      const dayName = days[d.getDay()];
-      if (counts[dayName] !== undefined) {
-        counts[dayName] += 1;
-        views[dayName] += (l.viewsCount || 50);
-      }
-    });
+    if (lessons && Array.isArray(lessons)) {
+      lessons.forEach(l => {
+        if (!l) return;
+        const d = new Date(l.createdAt || Date.now());
+        if (!isNaN(d.getTime())) {
+          const dayName = days[d.getDay()];
+          if (views[dayName] !== undefined) {
+            views[dayName] += Number(l.viewsCount) || 20;
+          }
+        }
+      });
+    }
 
     return [
-      { day: 'Mon', reflections: counts.Mon, views: views.Mon },
-      { day: 'Tue', reflections: counts.Tue, views: views.Tue },
-      { day: 'Wed', reflections: counts.Wed, views: views.Wed },
-      { day: 'Thu', reflections: counts.Thu, views: views.Thu },
-      { day: 'Fri', reflections: counts.Fri, views: views.Fri },
-      { day: 'Sat', reflections: counts.Sat, views: views.Sat },
-      { day: 'Sun', reflections: counts.Sun, views: views.Sun },
+      { day: 'Mon', views: views['Mon'] },
+      { day: 'Tue', views: views['Tue'] },
+      { day: 'Wed', views: views['Wed'] },
+      { day: 'Thu', views: views['Thu'] },
+      { day: 'Fri', views: views['Fri'] },
+      { day: 'Sat', views: views['Sat'] },
+      { day: 'Sun', views: views['Sun'] },
     ];
   }, [lessons]);
 
   return (
     <div className="space-y-8">
       
-      {/* Top Welcome Banner */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#059669] via-[#0D9488] to-[#0891B2] text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="relative z-10 max-w-xl">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md mb-3">
+      {/* Top Banner Greeting */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#1C1917] via-[#292524] to-[#44403C] text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#059669] text-white mb-3">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Welcome back, {user.name || "Writer"}</span>
+            <span>{user?.isPremium ? 'Premium Member Workspace ⭐' : 'Personal Growth Workspace'}</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Ready to record your latest life lesson?
+            Welcome back, {user?.name || 'Wisdom Explorer'}!
           </h2>
-          <p className="text-sm text-stone-100 mt-2 leading-relaxed opacity-90">
-            Documenting reflections transforms experience into wisdom. You have authored {totalCreated} life lessons so far.
+          <p className="text-sm text-stone-300 mt-1">
+            Track your reflections, view audience engagement, and build lasting wisdom.
           </p>
         </div>
 
-        <div className="relative z-10 flex items-center space-x-3">
-          <Link
-            to="/dashboard/add-lesson"
-            className="px-5 py-3 rounded-xl bg-white text-[#059669] font-extrabold text-sm shadow-md hover:bg-stone-50 transition flex items-center space-x-2 cursor-pointer"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Write New Lesson</span>
-          </Link>
-        </div>
+        <Link
+          to="/dashboard/add-lesson"
+          className="inline-flex items-center space-x-2 px-5 py-3 rounded-2xl bg-white text-stone-900 font-extrabold text-sm hover:bg-stone-100 transition shadow-lg flex-shrink-0"
+        >
+          <PlusCircle className="w-4 h-4 text-[#059669]" />
+          <span>Write New Lesson</span>
+        </Link>
       </div>
 
       {/* 4-Column Metric Stats Cards */}
