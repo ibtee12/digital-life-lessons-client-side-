@@ -1,5 +1,5 @@
 import React from "react";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { AlertTriangle, RefreshCw, Home, RotateCcw } from "lucide-react";
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -12,11 +12,18 @@ export class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("React ErrorBoundary caught an error:", error, errorInfo);
+    console.error("React ErrorBoundary caught:", error, errorInfo);
   }
 
   handleReload = () => {
     window.location.reload();
+  };
+
+  handleResetAuth = () => {
+    try {
+      localStorage.removeItem("dll_user");
+    } catch (e) {}
+    window.location.href = "/login";
   };
 
   handleGoHome = () => {
@@ -35,25 +42,33 @@ export class ErrorBoundary extends React.Component {
             <div>
               <h2 className="text-xl font-extrabold tracking-tight">Something went wrong</h2>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
-                An unexpected interface error occurred. You can reload the page or return to the home screen.
+                {this.state.error?.message || "An unexpected interface error occurred."}
               </p>
             </div>
 
-            <div className="flex items-center justify-center space-x-3 pt-2">
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
               <button
                 onClick={this.handleReload}
-                className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300 text-xs font-bold transition cursor-pointer"
+                className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300 text-xs font-bold transition cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Reload Page</span>
               </button>
 
               <button
+                onClick={this.handleResetAuth}
+                className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/40 text-amber-700 dark:text-amber-400 text-xs font-bold transition cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset Session</span>
+              </button>
+
+              <button
                 onClick={this.handleGoHome}
-                className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold shadow-md transition cursor-pointer"
+                className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold shadow-md transition cursor-pointer"
               >
                 <Home className="w-3.5 h-3.5" />
-                <span>Home Page</span>
+                <span>Home</span>
               </button>
             </div>
           </div>
