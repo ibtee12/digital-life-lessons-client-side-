@@ -98,7 +98,7 @@ export const RegisterPage = () => {
     setIsGoogleSubmitting(true);
     try {
       const res = await loginWithGoogle();
-      const isAdmin = res?.email && (res.email.toLowerCase().includes("admin") || res.email.toLowerCase().includes("nahyan") || res.email.toLowerCase().includes("ibtee"));
+      const isAdmin = res?.email && res.email.toLowerCase().trim() === "admin@digitallife.com";
       setTimeout(() => { navigate(isAdmin ? "/dashboard/admin" : "/dashboard"); }, 150);
     } catch (err) {
       console.error("Google Auth error:", err);

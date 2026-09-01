@@ -28,7 +28,7 @@ export const LoginPage = () => {
     setIsSubmitting(true);
     try {
       const loggedIn = await loginWithEmail(email, password);
-      const isAdmin = (email.toLowerCase().includes("admin") || email.toLowerCase().includes("nahyan") || email.toLowerCase().includes("ibtee"));
+      const isAdmin = email.toLowerCase().trim() === "admin@digitallife.com";
       setTimeout(() => {
         navigate(isAdmin ? "/dashboard/admin" : "/dashboard");
       }, 100);
@@ -43,7 +43,7 @@ export const LoginPage = () => {
     setIsGoogleSubmitting(true);
     try {
       const res = await loginWithGoogle();
-      const isAdmin = res?.email && (res.email.toLowerCase().includes("admin") || res.email.toLowerCase().includes("nahyan") || res.email.toLowerCase().includes("ibtee"));
+      const isAdmin = res?.email && res.email.toLowerCase().trim() === "admin@digitallife.com";
       setTimeout(() => {
         navigate(isAdmin ? "/dashboard/admin" : "/dashboard");
       }, 150);

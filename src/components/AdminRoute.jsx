@@ -20,11 +20,7 @@ export const AdminRoute = ({ children }) => {
 
   const isAdmin = 
     user.role === "admin" || 
-    (user.email && (
-      user.email.toLowerCase().includes("admin") ||
-      user.email.toLowerCase().includes("nahyan") ||
-      user.email.toLowerCase().includes("ibtee")
-    ));
+    (user.email && user.email.toLowerCase().trim() === "admin@digitallife.com");
 
   if (!isAdmin) {
     return (
