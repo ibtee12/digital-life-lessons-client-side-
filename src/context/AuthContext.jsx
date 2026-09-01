@@ -500,6 +500,24 @@ export const AuthProvider = ({ children }) => {
           console.warn("MongoDB Atlas background sync:", apiErr.message);
         }
 
+        // Also add/update user in local allUsers state for Admin Manage Users
+        const syncedUserEntry = {
+          id: fbUser.uid,
+          uid: fbUser.uid,
+          name: userData.name || fbUser.displayName || fbUser.email?.split("@")[0],
+          email: fbUser.email || userData.email,
+          photo: userData.photo || fbUser.photoURL || "",
+          role: resolvedRole,
+          isPremium: resolvedPremium
+        };
+        setAllUsers(prev => {
+          const exists = prev.some(u => u.email === syncedUserEntry.email);
+          if (exists) {
+            return prev.map(u => u.email === syncedUserEntry.email ? { ...u, ...syncedUserEntry } : u);
+          }
+          return [...prev, syncedUserEntry];
+        });
+
       } catch (err) {
         console.warn("Database sync skipped or timed out:", err.message);
       }

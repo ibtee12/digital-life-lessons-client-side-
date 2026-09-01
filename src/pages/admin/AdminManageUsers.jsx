@@ -4,8 +4,26 @@ import { useAuth } from '../../context/AuthContext';
 
 export const AdminManageUsers = () => {
   const { allUsers, lessons, toggleUserRole, deletePlatformUser, showToast } = useAuth();
-  const [usersList, setUsersList] = useState(allUsers || []);
+  const [dbUsers, setDbUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasFetchedFromDB, setHasFetchedFromDB] = useState(false);
+
+  // Merge local allUsers with database users (database takes priority)
+  const mergedUsers = (() => {
+    if (hasFetchedFromDB && dbUsers.length > 0) {
+      // Start with DB users
+      const merged = [...dbUsers];
+      // Add any local-only users that aren't in the DB
+      (allUsers || []).forEach(localUser => {
+        const existsInDB = merged.some(dbU => dbU.email === localUser.email);
+        if (!existsInDB) {
+          merged.push(localUser);
+        }
+      });
+      return merged;
+    }
+    return allUsers || [];
+  })();
 
   const fetchDatabaseUsers = async () => {
     setIsLoading(true);
@@ -18,20 +36,23 @@ export const AdminManageUsers = () => {
       });
       const data = await res.json();
       if (data.success && Array.isArray(data.users) && data.users.length > 0) {
-        // Map MongoDB format to client format
         const formatted = data.users.map(u => ({
-          id: u._id || u.uid || u.id,
-          uid: u.uid || u._id,
+          id: u._id?.toString() || u.uid || u.id,
+          uid: u.uid || u._id?.toString(),
           name: u.name || (u.email ? u.email.split("@")[0] : "Member"),
           email: u.email,
           photo: u.photo || u.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80",
           role: u.role || (u.email?.toLowerCase() === "admin@digitallife.com" ? "admin" : "user"),
-          isPremium: u.isPremium || false
+          isPremium: u.isPremium || false,
+          createdAt: u.createdAt || ""
         }));
-        setUsersList(formatted);
+        setDbUsers(formatted);
+        setHasFetchedFromDB(true);
+        showToast(`Loaded ${formatted.length} users from database`, "success");
       }
     } catch (err) {
       console.warn("Using local context users:", err.message);
+      showToast("Using local user data (database sync pending)", "info");
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +82,7 @@ export const AdminManageUsers = () => {
     const newRole = targetUser.role === "admin" ? "user" : "admin";
 
     // Optimistic UI update
-    setUsersList(prev => prev.map(u => (u.id === targetUser.id || u.email === targetUser.email) ? { ...u, role: newRole } : u));
+    setDbUsers(prev => prev.map(u => (u.id === targetUser.id || u.email === targetUser.email) ? { ...u, role: newRole } : u));
     toggleUserRole(targetUser.id);
 
     try {
@@ -74,7 +95,10 @@ export const AdminManageUsers = () => {
         },
         body: JSON.stringify({ role: newRole })
       });
-    } catch (e) {}
+      showToast(`User role updated to ${newRole.toUpperCase()}`, "success");
+    } catch (e) {
+      console.warn("Role update sync:", e.message);
+    }
   };
 
   const handleDeleteUser = async (targetUser) => {
@@ -83,11 +107,11 @@ export const AdminManageUsers = () => {
       return;
     }
 
-    if (!window.confirm(`Are you sure you want to delete user account "${targetUser.name || targetUser.email}"?`)) {
+    if (!window.confirm(`Are you sure you want to delete "${targetUser.name || targetUser.email}"?`)) {
       return;
     }
 
-    setUsersList(prev => prev.filter(u => u.id !== targetUser.id && u.email !== targetUser.email));
+    setDbUsers(prev => prev.filter(u => u.id !== targetUser.id && u.email !== targetUser.email));
     deletePlatformUser(targetUser.id);
 
     try {
@@ -98,7 +122,10 @@ export const AdminManageUsers = () => {
           "x-admin-email": "admin@digitallife.com"
         }
       });
-    } catch (e) {}
+      showToast("User account removed from platform", "info");
+    } catch (e) {
+      console.warn("Delete user sync:", e.message);
+    }
   };
 
   return (
@@ -107,17 +134,17 @@ export const AdminManageUsers = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-stone-800">
         <div>
           <h2 className="text-2xl font-extrabold text-stone-900 dark:text-stone-100">
-            Manage Users ({usersList.length})
+            Manage Users ({mergedUsers.length})
           </h2>
           <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-            Real-time database member registry. Manage roles, subscriptions, and access permissions.
+            {hasFetchedFromDB ? "Live database member registry." : "Local member registry."} Manage roles, subscriptions, and access.
           </p>
         </div>
 
         <button
           onClick={fetchDatabaseUsers}
           disabled={isLoading}
-          className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300 text-xs font-bold transition cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-bold transition cursor-pointer self-start sm:self-auto"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-[#059669]" : ""}`} />
           <span>{isLoading ? "Syncing..." : "Sync Database"}</span>
@@ -137,7 +164,7 @@ export const AdminManageUsers = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100 dark:divide-stone-800 text-sm">
-              {usersList.map((u) => {
+              {mergedUsers.map((u) => {
                 const count = getUserLessonCount(u);
                 const isSuperAdmin = u.email?.toLowerCase().trim() === "admin@digitallife.com";
 
@@ -149,13 +176,15 @@ export const AdminManageUsers = () => {
                         <img 
                           src={u.photo || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"} 
                           alt={u.name} 
+                          referrerPolicy="no-referrer"
+                          onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80"; }}
                           className="w-9 h-9 rounded-full object-cover border border-stone-200 dark:border-stone-700" 
                         />
                         <div>
                           <p className="font-bold text-stone-900 dark:text-stone-100 flex items-center space-x-1.5">
                             <span>{u.name || "User"}</span>
                             {isSuperAdmin && (
-                              <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 font-extrabold">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 font-extrabold">
                                 Primary Admin 🛡️
                               </span>
                             )}
@@ -211,6 +240,13 @@ export const AdminManageUsers = () => {
                   </tr>
                 );
               })}
+              {mergedUsers.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="py-12 text-center text-stone-400 text-sm">
+                    No users found. Users will appear here after they log in or register.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
